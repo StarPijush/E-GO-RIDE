@@ -68,7 +68,7 @@ class _RideRatingScreenState extends State<RideRatingScreen> {
 
     if (_submitted) {
       return Scaffold(
-        backgroundColor: EGoColors.surface,
+        backgroundColor: EGoColors.brandBackground,
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -76,7 +76,7 @@ class _RideRatingScreenState extends State<RideRatingScreen> {
               const Icon(
                 Icons.favorite,
                 size: 72,
-                color: EGoColors.brandPrimary,
+                color: EGoColors.brandYellowDark,
               ),
               const SizedBox(height: EGoSpacing.xl),
               Text('Thank you!', style: EGoTypography.headlineSmall),
@@ -94,7 +94,7 @@ class _RideRatingScreenState extends State<RideRatingScreen> {
     }
 
     return Scaffold(
-      backgroundColor: EGoColors.surface,
+      backgroundColor: EGoColors.brandBackground,
       appBar: AppBar(
         title: const Text('Rate your ride'),
         automaticallyImplyLeading: false,
@@ -127,7 +127,7 @@ class _RideRatingScreenState extends State<RideRatingScreen> {
               child: const Icon(
                 Icons.person,
                 size: 48,
-                color: EGoColors.brandPrimary,
+                color: EGoColors.brandNavy,
               ),
             ),
             const SizedBox(height: EGoSpacing.md),
@@ -151,7 +151,7 @@ class _RideRatingScreenState extends State<RideRatingScreen> {
                       i < _rating ? Icons.star : Icons.star_border,
                       size: 44,
                       color: i < _rating
-                          ? const Color(0xFFFBBC04)
+                          ? EGoColors.brandYellowDark
                           : EGoColors.grey300,
                     ),
                   ),
@@ -163,7 +163,7 @@ class _RideRatingScreenState extends State<RideRatingScreen> {
               Text(
                 _ratingLabel(_rating),
                 style: EGoTypography.titleSmall.copyWith(
-                  color: EGoColors.brandPrimary,
+                  color: EGoColors.brandNavy,
                 ),
               ),
             ],
@@ -197,16 +197,12 @@ class _RideRatingScreenState extends State<RideRatingScreen> {
                     });
                   },
                   selectedColor: EGoColors.brandPrimaryLight,
-                  checkmarkColor: EGoColors.brandPrimary,
+                  checkmarkColor: EGoColors.brandNavy,
                   labelStyle: EGoTypography.labelMedium.copyWith(
-                    color: selected
-                        ? EGoColors.brandPrimary
-                        : EGoColors.grey700,
+                    color: EGoColors.grey700,
                   ),
                   side: BorderSide(
-                    color: selected
-                        ? EGoColors.brandPrimary
-                        : EGoColors.outline,
+                    color: selected ? EGoColors.brandNavy : EGoColors.outline,
                   ),
                   backgroundColor: EGoColors.surface,
                 );
@@ -223,15 +219,19 @@ class _RideRatingScreenState extends State<RideRatingScreen> {
                   color: EGoColors.grey400,
                 ),
                 filled: true,
-                fillColor: EGoColors.grey100,
+                fillColor: EGoColors.surface,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(EGoSpacing.radiusLarge),
-                  borderSide: BorderSide.none,
+                  borderSide: const BorderSide(color: EGoColors.outlineVariant),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(EGoSpacing.radiusLarge),
+                  borderSide: const BorderSide(color: EGoColors.outlineVariant),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(EGoSpacing.radiusLarge),
                   borderSide: const BorderSide(
-                    color: EGoColors.brandPrimary,
+                    color: EGoColors.brandNavy,
                     width: 2,
                   ),
                 ),

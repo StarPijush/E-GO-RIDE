@@ -1,11 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:e_go/app/app_state.dart';
 import 'package:e_go/app/router.dart';
 import 'package:e_go/app/theme/index.dart';
+import 'package:e_go/core/config/auth_config.dart';
 import 'package:e_go/shared/widgets/buttons.dart';
-import 'package:e_go/features/auth/data/customer_repository.dart';
+import 'package:e_go/features/auth/data/services/mock_otp_service.dart';
 
 /// E-GO OTP verification screen.
 /// Development mock: OTP is always 123456.
@@ -26,8 +29,10 @@ class _OtpScreenState extends State<OtpScreen> {
   final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
   bool _isLoading = false;
   bool _isInvalidOtp = false;
-  int _resendCountdown = 30;
+  String? _resendError;
+  int _resendCountdown = MockOtpService.resendCooldown.inSeconds;
   bool _canResend = false;
+  Timer? _countdownTimer;
 
   @override
   void initState() {
@@ -35,25 +40,46 @@ class _OtpScreenState extends State<OtpScreen> {
     _startResendCountdown();
     // Auto-focus first field
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _focusNodes[0].requestFocus();
+      if (mounted) _focusNodes[0].requestFocus();
     });
   }
 
   void _startResendCountdown() {
+    _countdownTimer?.cancel();
     setState(() {
-      _resendCountdown = 30;
+      _resendCountdown = MockOtpService.resendCooldown.inSeconds;
       _canResend = false;
+      _resendError = null;
     });
-    _countdown();
+
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      setState(() {
+        _resendCountdown--;
+        if (_resendCountdown <= 0) {
+          _resendCountdown = 0;
+          _canResend = true;
+          timer.cancel();
+        }
+      });
+    });
   }
 
-  Future<void> _countdown() async {
-    for (var i = 30; i >= 0; i--) {
-      await Future.delayed(const Duration(seconds: 1));
-      if (!mounted) return;
+  Future<void> _resendOtp() async {
+    if (!_canResend || _isLoading) return;
+    setState(() => _canResend = false);
+
+    final sent = await context.read<AppState>().requestOtp(widget.phone);
+    if (!mounted) return;
+    if (sent) {
+      _startResendCountdown();
+    } else {
       setState(() {
-        _resendCountdown = i;
-        if (i == 0) _canResend = true;
+        _canResend = true;
+        _resendError = 'Could not resend OTP. Please try again.';
       });
     }
   }
@@ -61,7 +87,10 @@ class _OtpScreenState extends State<OtpScreen> {
   String get _otpValue => _controllers.map((c) => c.text).join();
 
   void _onDigitChanged(int index, String value) {
-    setState(() => _isInvalidOtp = false);
+    setState(() {
+      _isInvalidOtp = false;
+      _resendError = null;
+    });
 
     if (value.length > 1) {
       // Handle paste
@@ -91,15 +120,24 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   Future<void> _verify() async {
+    if (_isLoading) return;
     final otp = _otpValue;
     if (otp.length != 6) return;
-    setState(() => _isLoading = true);
-    await Future.delayed(const Duration(milliseconds: 800));
+
+    setState(() {
+      _isLoading = true;
+      _isInvalidOtp = false;
+    });
+
+    final appState = context.read<AppState>();
+    final valid = await appState.verifyOtp(phone: widget.phone, code: otp);
     if (!mounted) return;
 
-    final valid = context.read<AppState>().validateOtp(otp);
     if (valid) {
-      Navigator.pushReplacementNamed(context, EGoRouter.profileSetup);
+      final destination = appState.profile.isProfileComplete
+          ? EGoRouter.home
+          : EGoRouter.profileSetup;
+      Navigator.pushNamedAndRemoveUntil(context, destination, (_) => false);
     } else {
       setState(() {
         _isLoading = false;
@@ -114,6 +152,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   @override
   void dispose() {
+    _countdownTimer?.cancel();
     for (final c in _controllers) {
       c.dispose();
     }
@@ -126,9 +165,9 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: EGoColors.surface,
+      backgroundColor: EGoColors.brandBackground,
       appBar: AppBar(
-        backgroundColor: EGoColors.surface,
+        backgroundColor: EGoColors.brandBackground,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -149,38 +188,43 @@ class _OtpScreenState extends State<OtpScreen> {
               Text(
                 'Enter the 6-digit code sent to\n+91 ${widget.phone}',
                 style: EGoTypography.bodyMedium.copyWith(
-                  color: EGoColors.grey500,
+                  color: EGoColors.onSurfaceVariant,
                 ),
               ),
-              // Dev hint
-              const SizedBox(height: EGoSpacing.md),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: EGoSpacing.md,
-                  vertical: EGoSpacing.sm,
-                ),
-                decoration: BoxDecoration(
-                  color: EGoColors.warningLight,
-                  borderRadius: BorderRadius.circular(EGoSpacing.radiusMedium),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.info_outline,
-                      size: 14,
-                      color: EGoColors.warning,
+              // Development hint only; never shown in a real API build.
+              if (AuthConfig.isMockMode) ...[
+                const SizedBox(height: EGoSpacing.md),
+                Container(
+                  key: const Key('otp_demo_hint'),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: EGoSpacing.md,
+                    vertical: EGoSpacing.sm,
+                  ),
+                  decoration: BoxDecoration(
+                    color: EGoColors.warningLight,
+                    borderRadius: BorderRadius.circular(
+                      EGoSpacing.radiusMedium,
                     ),
-                    const SizedBox(width: EGoSpacing.xs),
-                    Text(
-                      'Demo OTP: ${MockCustomerRepository.devMockOtp}',
-                      style: EGoTypography.labelSmall.copyWith(
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.info_outline,
+                        size: 14,
                         color: EGoColors.warning,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: EGoSpacing.xs),
+                      Text(
+                        'Demo OTP: ${MockOtpService.devOtp}',
+                        style: EGoTypography.labelSmall.copyWith(
+                          color: EGoColors.warning,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              ],
               const SizedBox(height: EGoSpacing.xxxl),
               // OTP fields
               Row(
@@ -191,6 +235,16 @@ class _OtpScreenState extends State<OtpScreen> {
                 const SizedBox(height: EGoSpacing.md),
                 Text(
                   'Invalid OTP. Please try again.',
+                  key: const Key('otp_error_message'),
+                  style: EGoTypography.bodySmall.copyWith(
+                    color: EGoColors.error,
+                  ),
+                ),
+              ],
+              if (_resendError != null) ...[
+                const SizedBox(height: EGoSpacing.md),
+                Text(
+                  _resendError!,
                   style: EGoTypography.bodySmall.copyWith(
                     color: EGoColors.error,
                   ),
@@ -208,6 +262,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 )
               else ...[
                 EGoPrimaryButton(
+                  key: const Key('otp_verify_button'),
                   onPressed: _otpValue.length == 6 ? _verify : null,
                   label: 'Verify',
                 ),
@@ -215,18 +270,19 @@ class _OtpScreenState extends State<OtpScreen> {
                 Center(
                   child: _canResend
                       ? TextButton(
-                          onPressed: _startResendCountdown,
+                          key: const Key('otp_resend_button'),
+                          onPressed: _resendOtp,
                           child: Text(
                             'Resend OTP',
                             style: EGoTypography.labelLarge.copyWith(
-                              color: EGoColors.brandPrimary,
+                              color: EGoColors.brandNavy,
                             ),
                           ),
                         )
                       : Text(
                           'Resend OTP in ${_resendCountdown}s',
                           style: EGoTypography.bodyMedium.copyWith(
-                            color: EGoColors.grey500,
+                            color: EGoColors.onSurfaceVariant,
                           ),
                         ),
                 ),
@@ -246,6 +302,7 @@ class _OtpScreenState extends State<OtpScreen> {
         focusNode: FocusNode(),
         onKeyEvent: (event) => _onKeyPress(index, event),
         child: TextFormField(
+          key: Key('otp_digit_$index'),
           controller: _controllers[index],
           focusNode: _focusNodes[index],
           keyboardType: TextInputType.number,
@@ -261,7 +318,7 @@ class _OtpScreenState extends State<OtpScreen> {
                 ? EGoColors.errorLight
                 : _focusNodes[index].hasFocus
                 ? EGoColors.brandPrimaryLight
-                : EGoColors.grey100,
+                : EGoColors.surface,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(EGoSpacing.radiusLarge),
               borderSide: BorderSide.none,
@@ -269,7 +326,7 @@ class _OtpScreenState extends State<OtpScreen> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(EGoSpacing.radiusLarge),
               borderSide: const BorderSide(
-                color: EGoColors.brandPrimary,
+                color: EGoColors.brandNavy,
                 width: 2,
               ),
             ),

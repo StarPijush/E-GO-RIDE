@@ -6,7 +6,6 @@ import 'package:e_go/core/booking_state.dart';
 import 'package:e_go/core/mock_pricing.dart';
 import 'package:e_go/features/booking/data/booking_repository.dart';
 import 'package:e_go/features/location/domain/location_model.dart';
-import 'package:e_go/mock_data/mock_data.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -30,7 +29,7 @@ void main() {
             id: 'p1',
             label: 'Jhargram Railway Station',
             subtitle: 'Station Road',
-            coordinate: MockData.mockCurrentLocation,
+            coordinate: LatLng(22.4529, 86.9003),
           );
           const destination = SavedLocation(
             id: 'd1',
@@ -127,7 +126,7 @@ void main() {
           const pickup = SavedLocation(
             id: 'p1',
             label: 'Jhargram Station',
-            coordinate: MockData.mockCurrentLocation,
+            coordinate: LatLng(22.4529, 86.9003),
           );
           const destination = SavedLocation(
             id: 'd1',

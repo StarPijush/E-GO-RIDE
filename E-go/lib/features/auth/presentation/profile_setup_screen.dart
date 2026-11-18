@@ -30,14 +30,23 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
-    await context.read<AppState>().completeProfileSetup(
+    final success = await context.read<AppState>().completeProfileSetup(
       name: _nameController.text.trim(),
       email: _emailController.text.trim().isEmpty
           ? null
           : _emailController.text.trim(),
     );
-    if (mounted) {
+    if (!mounted) return;
+
+    if (success) {
       Navigator.pushNamedAndRemoveUntil(context, EGoRouter.home, (_) => false);
+    } else {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not complete your profile. Please try again.'),
+        ),
+      );
     }
   }
 
@@ -45,9 +54,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   Widget build(BuildContext context) {
     final bottom = MediaQuery.viewInsetsOf(context).bottom;
     return Scaffold(
-      backgroundColor: EGoColors.surface,
+      backgroundColor: EGoColors.brandBackground,
       appBar: AppBar(
-        backgroundColor: EGoColors.surface,
+        backgroundColor: EGoColors.brandBackground,
         elevation: 0,
         automaticallyImplyLeading: false,
         title: const EgoLogo.wordmark(height: 22),
@@ -85,7 +94,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         child: const Icon(
                           Icons.person,
                           size: 50,
-                          color: EGoColors.brandBlack,
+                          color: EGoColors.brandNavy,
                         ),
                       ),
                       Container(
@@ -97,7 +106,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         child: const Icon(
                           Icons.camera_alt,
                           size: 14,
-                          color: EGoColors.brandBlack,
+                          color: EGoColors.brandNavy,
                         ),
                       ),
                     ],
@@ -117,7 +126,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 Text(
                   'Full name *',
                   style: EGoTypography.labelMedium.copyWith(
-                    color: EGoColors.grey700,
+                    color: EGoColors.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: EGoSpacing.sm),
@@ -141,7 +150,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 Text(
                   'Email (optional)',
                   style: EGoTypography.labelMedium.copyWith(
-                    color: EGoColors.grey700,
+                    color: EGoColors.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: EGoSpacing.sm),
@@ -165,7 +174,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   onPressed: _isLoading ? null : _submit,
                   label: 'Start riding',
                   isLoading: _isLoading,
-                  icon: const Icon(Icons.arrow_forward, color: EGoColors.white),
+                  icon: const Icon(
+                    Icons.arrow_forward,
+                    color: EGoColors.onPrimary,
+                  ),
                 ),
               ],
             ),
@@ -178,16 +190,22 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: EGoTypography.bodyLarge.copyWith(color: EGoColors.grey400),
+      hintStyle: EGoTypography.bodyLarge.copyWith(
+        color: EGoColors.onSurfaceMuted,
+      ),
       filled: true,
-      fillColor: EGoColors.grey100,
+      fillColor: EGoColors.surface,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(EGoSpacing.radiusLarge),
-        borderSide: BorderSide.none,
+        borderSide: const BorderSide(color: EGoColors.outlineVariant),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(EGoSpacing.radiusLarge),
+        borderSide: const BorderSide(color: EGoColors.outlineVariant),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(EGoSpacing.radiusLarge),
-        borderSide: const BorderSide(color: EGoColors.brandBlack, width: 2),
+        borderSide: const BorderSide(color: EGoColors.brandNavy, width: 2),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(EGoSpacing.radiusLarge),

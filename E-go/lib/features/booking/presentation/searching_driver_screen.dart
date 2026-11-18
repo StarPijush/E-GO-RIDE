@@ -98,7 +98,7 @@ class _SearchingDriverScreenState extends State<SearchingDriverScreen>
     final isFailed = appState.bookingStatus == BookingStatus.failed;
 
     return Scaffold(
-      backgroundColor: EGoColors.surface,
+      backgroundColor: EGoColors.brandBackground,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(EGoSpacing.xxl),
@@ -188,7 +188,7 @@ class _SearchingDriverScreenState extends State<SearchingDriverScreen>
                     setState(() {});
                   },
                   label: 'Retry',
-                  icon: const Icon(Icons.refresh, color: EGoColors.white),
+                  icon: const Icon(Icons.refresh, color: EGoColors.onPrimary),
                 ),
                 const SizedBox(height: EGoSpacing.md),
                 EGoSecondaryButton(
@@ -220,8 +220,9 @@ class _SearchRouteSummary extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(EGoSpacing.lg),
       decoration: BoxDecoration(
-        color: EGoColors.grey50,
+        color: EGoColors.surface,
         borderRadius: BorderRadius.circular(EGoSpacing.radiusXLarge),
+        border: Border.all(color: EGoColors.outlineVariant),
       ),
       child: Column(
         children: [

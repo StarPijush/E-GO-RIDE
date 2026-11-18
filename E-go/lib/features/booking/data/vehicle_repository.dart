@@ -26,9 +26,17 @@ class VehicleOption {
   final bool isAvailable;
 }
 
-class MockVehicleRepository {
+abstract class VehicleRepository {
+  Future<List<VehicleOption>> getAvailableVehicles({
+    required LatLng from,
+    required LatLng to,
+  });
+}
+
+class MockVehicleRepository implements VehicleRepository {
   /// Returns mock vehicle options for the given route.
   /// All data is simulated — no real drivers.
+  @override
   Future<List<VehicleOption>> getAvailableVehicles({
     required LatLng from,
     required LatLng to,

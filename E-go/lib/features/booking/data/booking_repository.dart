@@ -32,7 +32,7 @@ class RideRecord {
   final SavedLocation destinationLocation;
   final VehicleType vehicleType;
   final FareBreakdown fareBreakdown;
-  final MockDriver driver;
+  final MockDriver? driver;
   final RideStatus status;
   final DateTime bookedAt;
   final DateTime? completedAt;
@@ -102,8 +102,14 @@ class MockBookingRepository {
     }
   }
 
-  void addRide(RideRecord ride) {
+  /// Inserts [ride] unless a record with the same id already exists.
+  ///
+  /// Returns false when the ride was already stored, making order submission
+  /// idempotent for retries and double taps.
+  bool addRide(RideRecord ride) {
+    if (_rides.any((r) => r.id == ride.id)) return false;
     _rides.insert(0, ride);
+    return true;
   }
 
   void updateRide(RideRecord updated) {

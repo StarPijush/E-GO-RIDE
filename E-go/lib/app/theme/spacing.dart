@@ -34,6 +34,14 @@ abstract class EGoSpacing {
   static const double radiusXLarge = 16.0;
   static const double radiusRound = 9999.0;
   static const double radiusPill = 24.0;
+  static const double radiusButton = radiusPill;
+  static const double radiusCard = radiusXLarge;
+  static const double radiusInput = radiusXLarge;
+  static const double radiusSheet = xxl;
+
+  // Borders
+  static const double borderWidth = 1.0;
+  static const double focusBorderWidth = 2.0;
 
   // Elevation/shadow
   static const double elevation0 = 0.0;

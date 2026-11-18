@@ -2,6 +2,15 @@
 
 A new Flutter project.
 
+## Mock authentication
+
+Development builds use an in-memory mock auth system. Demo login:
+`9000000001` / `EgoDemo@123`. Registration OTP: `123456`.
+
+Run with `--dart-define=AUTH_MODE=mock`. See
+[`docs/ego_mock_auth_testing_guide.md`](docs/ego_mock_auth_testing_guide.md)
+for flows, route protection, tests, and production replacement notes.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.

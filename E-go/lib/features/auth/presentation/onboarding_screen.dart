@@ -73,7 +73,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     final isLast = _currentPage == _slides.length - 1;
     return Scaffold(
-      backgroundColor: EGoColors.surface,
+      backgroundColor: EGoColors.brandBackground,
       body: SafeArea(
         child: Column(
           children: [
@@ -90,7 +90,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: Text(
                     'Skip',
                     style: EGoTypography.labelLarge.copyWith(
-                      color: EGoColors.grey500,
+                      color: EGoColors.onSurfaceMuted,
                     ),
                   ),
                 ),
@@ -138,12 +138,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   EGoPrimaryButton(
                     onPressed: _next,
                     label: isLast ? 'Get started' : 'Next',
-                    icon: isLast
-                        ? const Icon(
-                            Icons.arrow_forward_rounded,
-                            color: EGoColors.brandBlack,
-                          )
-                        : null,
                   ),
                 ],
               ),
@@ -212,7 +206,7 @@ class _OnboardingPage extends StatelessWidget {
           Text(
             slide.subtitle,
             style: EGoTypography.bodyLarge.copyWith(
-              color: EGoColors.grey600,
+              color: EGoColors.onSurfaceVariant,
               height: 1.6,
             ),
             textAlign: TextAlign.center,

@@ -31,7 +31,9 @@ class EGoCurrentLocationButton extends StatelessWidget {
             padding: const EdgeInsets.all(EGoSpacing.md),
             child: Icon(
               Icons.my_location,
-              color: isActive ? EGoColors.brandPrimary : EGoColors.grey400,
+              color: isActive
+                  ? EGoColors.brandPrimary
+                  : EGoColors.onSurfaceMuted,
               size: EGoSpacing.iconMedium,
             ),
           ),
@@ -109,7 +111,7 @@ class _ZoomButton extends StatelessWidget {
             padding: const EdgeInsets.all(EGoSpacing.md),
             child: Icon(
               icon,
-              color: enabled ? EGoColors.onSurface : EGoColors.grey400,
+              color: enabled ? EGoColors.onSurface : EGoColors.onSurfaceMuted,
               size: EGoSpacing.iconMedium,
             ),
           ),

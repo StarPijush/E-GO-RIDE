@@ -120,7 +120,7 @@ class _LocationSearchResultTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconData = _getIconForType(result.type);
+    final iconData = iconForPlaceType(result.type);
 
     return Material(
       color: Colors.transparent,
@@ -167,24 +167,5 @@ class _LocationSearchResultTile extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  IconData _getIconForType(PlaceType type) {
-    switch (type) {
-      case PlaceType.market:
-        return Icons.store;
-      case PlaceType.transport:
-        return Icons.train;
-      case PlaceType.landmark:
-        return Icons.account_balance;
-      case PlaceType.hospital:
-        return Icons.local_hospital;
-      case PlaceType.education:
-        return Icons.school;
-      case PlaceType.residential:
-        return Icons.home;
-      case PlaceType.other:
-        return Icons.place;
-    }
   }
 }

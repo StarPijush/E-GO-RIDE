@@ -86,7 +86,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: EGoColors.brandYellow,
+      backgroundColor: EGoColors.brandPrimary,
       body: Center(
         child: AnimatedBuilder(
           animation: _controller,
@@ -112,7 +112,7 @@ class _SplashScreenState extends State<SplashScreen>
                   child: Text(
                     'Move your way.',
                     style: EGoTypography.brandTagline.copyWith(
-                      color: EGoColors.brandBlack.withValues(alpha: 0.8),
+                      color: EGoColors.brandNavy.withValues(alpha: 0.8),
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.4,

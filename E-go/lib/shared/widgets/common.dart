@@ -49,7 +49,9 @@ class EGoLabeledDivider extends StatelessWidget {
             label!,
             style:
                 labelStyle ??
-                EGoTypography.labelSmall.copyWith(color: EGoColors.grey500),
+                EGoTypography.labelSmall.copyWith(
+                  color: EGoColors.onSurfaceMuted,
+                ),
           ),
         ),
         const Expanded(child: Divider(height: 1, thickness: 1)),
@@ -85,7 +87,7 @@ class EGoEmptyState extends StatelessWidget {
           children: [
             IconTheme(
               data: IconThemeData(
-                color: EGoColors.grey400,
+                color: EGoColors.onSurfaceMuted,
                 size: EGoSpacing.iconLarge * 2,
               ),
               child: icon,
@@ -94,7 +96,7 @@ class EGoEmptyState extends StatelessWidget {
             Text(
               title,
               style: EGoTypography.titleLarge.copyWith(
-                color: EGoColors.grey600,
+                color: EGoColors.onSurface,
               ),
               textAlign: TextAlign.center,
             ),
@@ -103,7 +105,7 @@ class EGoEmptyState extends StatelessWidget {
               Text(
                 subtitle!,
                 style: EGoTypography.bodyMedium.copyWith(
-                  color: EGoColors.grey500,
+                  color: EGoColors.onSurfaceVariant,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -133,7 +135,7 @@ class EGoLoadingOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: EGoColors.black.withValues(alpha: 0.3),
+      color: EGoColors.brandNavy.withValues(alpha: 0.3),
       child: Center(
         child: Container(
           padding: const EdgeInsets.all(EGoSpacing.xxxl),

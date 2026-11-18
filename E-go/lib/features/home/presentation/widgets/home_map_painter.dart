@@ -1,360 +1,178 @@
-import 'dart:math' as math;
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// E-GO Home Screen — Cartographic Map Illustration
-// CustomPainter recreation of the HTML SVG reference design.
-// Colours are cartographic / geographic — intentionally neutral and NOT brand
-// colours. Brand identity (yellow/black) is applied via UI overlays, not the
-// map canvas itself.
-// ─────────────────────────────────────────────────────────────────────────────
-
-class HomeMapPainter extends CustomPainter {
-  const HomeMapPainter();
-
-  // ── Color tokens (from HTML reference) ──────────────────────────────────
-  static const Color _mapBg = Color(0xFFF4F6F3);
-  static const Color _land1 = Color(0xFFE8EFE8);
-  static const Color _land2 = Color(0xFFE4ECE4);
-  static const Color _land3 = Color(0xFFEAF0EA);
-  static const Color _block = Color(0xFFECEEE9);
-  static const Color _minorRoad = Color(0xFFDFE4DF);
-  static const Color _roadCasing = Color(0xFFD1D9D2);
-  static const Color _roadSurface = Color(0xFFFFFFFF);
-  static const Color _railway = Color(0xFFB8C4BC);
-  static const Color _labelColor = Color(0xFFAFBDB6);
+/// CustomPainter that renders the reference map aesthetics for Jhargram.
+///
+/// Features:
+/// - Background terrain: #E8EDE2
+/// - Forest & Green reserves: #D3E4C6 and #D7E8CB
+/// - Minor local streets: #FFFFFF
+/// - Major highway / state arterial: #FEE588 with #F7BA1E dashed centerline
+/// - Railway indicator: #CBD5E1 with #64748B dashes
+class HomeMapStylingPainter extends CustomPainter {
+  const HomeMapStylingPainter();
 
   @override
   void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
+    final sx = size.width / 400.0;
+    final sy = size.height / 320.0;
 
-    // ── 1. Background ───────────────────────────────────────────────────────
-    canvas.drawRect(Rect.fromLTWH(0, 0, w, h), Paint()..color = _mapBg);
+    // 1. Background terrain
+    final bgPaint = Paint()..color = const Color(0xFFE8EDE2);
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), bgPaint);
 
-    // ── 2. Green vegetation / land parcels ──────────────────────────────────
-    _drawLandParcels(canvas, w, h);
-
-    // ── 3. Urban blocks (grey rectangles) ───────────────────────────────────
-    _drawUrbanBlocks(canvas, w, h);
-
-    // ── 4. Minor connector roads ─────────────────────────────────────────────
-    _drawMinorRoads(canvas, w, h);
-
-    // ── 5. Arterial roads (casing + surface) ─────────────────────────────────
-    _drawArterialRoads(canvas, w, h);
-
-    // ── 6. Railway line (dashed) ─────────────────────────────────────────────
-    _drawRailway(canvas, w, h);
-
-    // ── 7. Place labels ───────────────────────────────────────────────────────
-    _drawLabels(canvas, w, h);
-  }
-
-  // ── Land Parcels ──────────────────────────────────────────────────────────
-  void _drawLandParcels(Canvas canvas, double w, double h) {
-    final paint = Paint()..style = PaintingStyle.fill;
-
-    // Parcel 1 — top-left organic shape
-    paint.color = _land1.withValues(alpha: 0.9);
-    final p1 = Path()
-      ..moveTo(w * -0.076, h * -0.048)
-      ..cubicTo(
-        w * 0.153,
-        h * 0.048,
-        w * 0.280,
-        h * -0.024,
-        w * 0.433,
-        h * 0.083,
-      )
-      ..cubicTo(
-        w * 0.382,
-        h * 0.333,
-        w * 0.102,
-        h * 0.310,
-        w * -0.076,
-        h * 0.357,
-      )
-      ..close();
-    canvas.drawPath(p1, paint);
-
-    // Parcel 2 — top-right organic shape
-    paint.color = _land2.withValues(alpha: 0.8);
-    final p2 = Path()
-      ..moveTo(w * 0.661, h * -0.048)
-      ..cubicTo(w * 0.814, h * 0.048, w * 0.941, h * 0.0, w * 1.095, h * 0.095)
-      ..lineTo(w * 1.095, h * 0.452)
-      ..cubicTo(
-        w * 0.865,
-        h * 0.429,
-        w * 0.738,
-        h * 0.333,
-        w * 0.611,
-        h * 0.286,
-      )
-      ..close();
-    canvas.drawPath(p2, paint);
-
-    // Parcel 3 — bottom-left organic shape
-    paint.color = _land3.withValues(alpha: 0.7);
-    final p3 = Path()
-      ..moveTo(w * -0.051, h * 0.690)
-      ..cubicTo(
-        w * 0.153,
-        h * 0.643,
-        w * 0.306,
-        h * 0.738,
-        w * 0.357,
-        h * 1.024,
-      )
-      ..lineTo(w * -0.051, h * 1.024)
-      ..close();
-    canvas.drawPath(p3, paint);
-  }
-
-  // ── Urban Blocks ──────────────────────────────────────────────────────────
-  void _drawUrbanBlocks(Canvas canvas, double w, double h) {
-    final paint = Paint()
-      ..color = _block.withValues(alpha: 0.6)
+    // 2. Green Forest Reserves 1 (Chilkigarh belt)
+    final greenPaint1 = Paint()
+      ..color = const Color(0xFFD3E4C6).withValues(alpha: 0.8)
       ..style = PaintingStyle.fill;
+    final p1 = Path()
+      ..moveTo(-20 * sx, 0 * sy)
+      ..cubicTo(30 * sx, 20 * sy, 80 * sx, -10 * sy, 130 * sx, 15 * sy)
+      ..cubicTo(180 * sx, 40 * sy, 210 * sx, 10 * sy, 240 * sx, 5 * sy)
+      ..cubicTo(270 * sx, 0 * sy, 310 * sx, 35 * sy, 420 * sx, 20 * sy)
+      ..lineTo(420 * sx, 110 * sy)
+      ..cubicTo(360 * sx, 120 * sy, 290 * sx, 85 * sy, 240 * sx, 95 * sy)
+      ..cubicTo(190 * sx, 105 * sy, 150 * sx, 145 * sy, 80 * sx, 130 * sy)
+      ..cubicTo(30 * sx, 120 * sy, 10 * sx, 140 * sy, -20 * sx, 130 * sy)
+      ..close();
+    canvas.drawPath(p1, greenPaint1);
 
-    // Block 1
-    _roundRect(canvas, paint, w * 0.165, h * 0.202, w * 0.242, h * 0.167, 6);
-    // Block 2
-    _roundRect(canvas, paint, w * 0.535, h * 0.190, w * 0.306, h * 0.202, 8);
-    // Block 3
-    _roundRect(canvas, paint, w * 0.636, h * 0.571, w * 0.204, h * 0.214, 8);
-    // Block 4 — small mid-left
-    paint.color = _block.withValues(alpha: 0.4);
-    _roundRect(canvas, paint, w * 0.064, h * 0.405, w * 0.153, h * 0.143, 5);
-  }
+    // 3. Green Forest Reserves 2 (Deer park belt)
+    final greenPaint2 = Paint()
+      ..color = const Color(0xFFD7E8CB).withValues(alpha: 0.7)
+      ..style = PaintingStyle.fill;
+    final p2 = Path()
+      ..moveTo(260 * sx, 210 * sy)
+      ..cubicTo(300 * sx, 200 * sy, 350 * sx, 220 * sy, 420 * sx, 205 * sy)
+      ..lineTo(420 * sx, 340 * sy)
+      ..lineTo(220 * sx, 340 * sy)
+      ..cubicTo(210 * sx, 300 * sy, 230 * sx, 260 * sy, 260 * sx, 210 * sy)
+      ..close();
+    canvas.drawPath(p2, greenPaint2);
 
-  void _roundRect(
-    Canvas canvas,
-    Paint paint,
-    double x,
-    double y,
-    double width,
-    double height,
-    double radius,
-  ) {
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(x, y, width, height),
-        Radius.circular(radius),
-      ),
-      paint,
-    );
-  }
-
-  // ── Minor Roads ───────────────────────────────────────────────────────────
-  void _drawMinorRoads(Canvas canvas, double w, double h) {
-    final paint = Paint()
-      ..color = _minorRoad
-      ..strokeWidth = 2.5
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    // Road 1 — gentle horizontal connector
-    final r1 = Path()
-      ..moveTo(w * -0.051, h * 0.429)
-      ..lineTo(w * 1.070, h * 0.381);
-    canvas.drawPath(r1, paint);
-
-    // Road 2 — vertical side connector
-    final r2 = Path()
-      ..moveTo(w * 0.433, h * 0.0)
-      ..lineTo(w * 0.408, h * 1.0);
-    canvas.drawPath(r2, paint);
-  }
-
-  // ── Arterial Roads ────────────────────────────────────────────────────────
-  void _drawArterialRoads(Canvas canvas, double w, double h) {
-    // Road A — main curved horizontal arterial
-    _drawRoad(
-      canvas,
-      _buildArterialA(w, h),
-      casingWidth: 9.0,
-      surfaceWidth: 5.0,
-    );
-
-    // Road B — diagonal curved arterial
-    _drawRoad(
-      canvas,
-      _buildArterialB(w, h),
-      casingWidth: 8.0,
-      surfaceWidth: 4.5,
-    );
-  }
-
-  Path _buildArterialA(double w, double h) {
-    return Path()
-      ..moveTo(w * -0.076, h * 0.571)
-      ..cubicTo(
-        w * 0.204,
-        h * 0.524,
-        w * 0.433,
-        h * 0.595,
-        w * 0.688,
-        h * 0.548,
-      )
-      ..cubicTo(
-        w * 0.841,
-        h * 0.524,
-        w * 0.967,
-        h * 0.571,
-        w * 1.095,
-        h * 0.548,
-      );
-  }
-
-  Path _buildArterialB(double w, double h) {
-    return Path()
-      ..moveTo(w * 0.280, h * -0.024)
-      ..cubicTo(
-        w * 0.255,
-        h * 0.238,
-        w * 0.331,
-        h * 0.452,
-        w * 0.280,
-        h * 0.690,
-      )
-      ..cubicTo(
-        w * 0.255,
-        h * 0.833,
-        w * 0.229,
-        h * 0.929,
-        w * 0.255,
-        h * 1.048,
-      );
-  }
-
-  void _drawRoad(
-    Canvas canvas,
-    Path path, {
-    required double casingWidth,
-    required double surfaceWidth,
-  }) {
-    // Casing (outline)
-    canvas.drawPath(
-      path,
-      Paint()
-        ..color = _roadCasing
-        ..strokeWidth = casingWidth
-        ..style = PaintingStyle.stroke
+    // 4. Minor local streets (white)
+    void drawStreet(Offset from, Offset to, double width) {
+      final paint = Paint()
+        ..color = const Color(0xFFFFFFFF)
+        ..strokeWidth = width * ((sx + sy) / 2)
         ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round,
-    );
-    // Surface (white centre)
-    canvas.drawPath(
-      path,
-      Paint()
-        ..color = _roadSurface
-        ..strokeWidth = surfaceWidth
-        ..style = PaintingStyle.stroke
-        ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round,
-    );
-  }
+        ..style = PaintingStyle.stroke;
+      canvas.drawLine(from, to, paint);
+    }
 
-  // ── Railway Line (dashed) ─────────────────────────────────────────────────
-  void _drawRailway(Canvas canvas, double w, double h) {
-    final path = Path()
-      ..moveTo(w * 0.688, h * -0.024)
-      ..cubicTo(
-        w * 0.738,
-        h * 0.333,
-        w * 0.700,
-        h * 0.619,
-        w * 0.738,
-        h * 1.024,
+    drawStreet(Offset(-40 * sx, 240 * sy), Offset(440 * sx, 180 * sy), 6.0);
+    drawStreet(Offset(60 * sx, -20 * sy), Offset(140 * sx, 340 * sy), 5.0);
+    drawStreet(Offset(280 * sx, -20 * sy), Offset(220 * sx, 340 * sy), 4.5);
+
+    // Curved minor streets
+    final curvedStreetPaint1 = Paint()
+      ..color = const Color(0xFFFFFFFF)
+      ..strokeWidth = 5.0 * ((sx + sy) / 2)
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+    final cs1 = Path()
+      ..moveTo(120 * sx, 70 * sy)
+      ..quadraticBezierTo(240 * sx, 120 * sy, 380 * sx, 90 * sy);
+    canvas.drawPath(cs1, curvedStreetPaint1);
+
+    final curvedStreetPaint2 = Paint()
+      ..color = const Color(0xFFFFFFFF)
+      ..strokeWidth = 7.0 * ((sx + sy) / 2)
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+    final cs2 = Path()
+      ..moveTo(-20 * sx, 160 * sy)
+      ..quadraticBezierTo(150 * sx, 200 * sy, 420 * sx, 140 * sy);
+    canvas.drawPath(cs2, curvedStreetPaint2);
+
+    // 5. Major Highway / State Highway Arterial (Yellow)
+    // Path: M-10 60 Q 120 110 210 180 T 430 270
+    final hwPath = Path()
+      ..moveTo(-10 * sx, 60 * sy)
+      ..quadraticBezierTo(120 * sx, 110 * sy, 210 * sx, 180 * sy)
+      ..quadraticBezierTo(
+        (2 * 210 - 120) * sx,
+        (2 * 180 - 110) * sy,
+        430 * sx,
+        270 * sy,
       );
 
-    // Dash pattern — solid base
-    canvas.drawPath(
-      path,
-      Paint()
-        ..color = _railway.withValues(alpha: 0.5)
-        ..strokeWidth = 1.5
-        ..style = PaintingStyle.stroke
-        ..strokeCap = StrokeCap.butt,
-    );
+    // Base highway stroke
+    final hwBasePaint = Paint()
+      ..color = const Color(0xFFFEE588)
+      ..strokeWidth = 8.0 * ((sx + sy) / 2)
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round
+      ..style = PaintingStyle.stroke;
+    canvas.drawPath(hwPath, hwBasePaint);
 
-    // Dash ticks — approximate using short line segments
+    // Centerline dashed stroke
     _drawDashedPath(
-      canvas,
-      path,
-      _railway.withValues(alpha: 0.7),
-      2.0,
-      6.0,
-      4.0,
+      canvas: canvas,
+      path: hwPath,
+      paint: Paint()
+        ..color = const Color(0xFFF7BA1E)
+        ..strokeWidth = 3.0 * ((sx + sy) / 2)
+        ..strokeCap = StrokeCap.round
+        ..style = PaintingStyle.stroke,
+      dashLength: 8.0 * sx,
+      dashSpace: 6.0 * sx,
+    );
+
+    // 6. Railway Line Indicator (Slate line with dashes)
+    final railFrom = Offset(-10 * sx, 190 * sy);
+    final railTo = Offset(410 * sx, 70 * sy);
+
+    final railBasePaint = Paint()
+      ..color = const Color(0xFFCBD5E1)
+      ..strokeWidth = 3.5 * ((sx + sy) / 2)
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+    canvas.drawLine(railFrom, railTo, railBasePaint);
+
+    final railPath = Path()
+      ..moveTo(railFrom.dx, railFrom.dy)
+      ..lineTo(railTo.dx, railTo.dy);
+
+    _drawDashedPath(
+      canvas: canvas,
+      path: railPath,
+      paint: Paint()
+        ..color = const Color(0xFF64748B)
+        ..strokeWidth = 3.5 * ((sx + sy) / 2)
+        ..strokeCap = StrokeCap.round
+        ..style = PaintingStyle.stroke,
+      dashLength: 6.0 * sx,
+      dashSpace: 6.0 * sx,
     );
   }
 
-  void _drawDashedPath(
-    Canvas canvas,
-    Path path,
-    Color color,
-    double strokeWidth,
-    double dashLength,
-    double gapLength,
-  ) {
+  void _drawDashedPath({
+    required Canvas canvas,
+    required Path path,
+    required Paint paint,
+    required double dashLength,
+    required double dashSpace,
+  }) {
     final metrics = path.computeMetrics();
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = strokeWidth
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.square;
-
     for (final metric in metrics) {
-      double distance = 0.0;
-      bool draw = true;
+      var distance = 0.0;
+      var draw = true;
       while (distance < metric.length) {
-        final segmentLength = draw ? dashLength : gapLength;
+        final length = draw ? dashLength : dashSpace;
         if (draw) {
-          final start = distance.clamp(0.0, metric.length);
-          final end = (distance + segmentLength).clamp(0.0, metric.length);
-          final extracted = metric.extractPath(start, end);
-          canvas.drawPath(extracted, paint);
+          final extract = metric.extractPath(
+            distance,
+            (distance + length).clamp(0.0, metric.length),
+          );
+          canvas.drawPath(extract, paint);
         }
-        distance += segmentLength;
+        distance += length;
         draw = !draw;
       }
     }
   }
 
-  // ── Place Labels ───────────────────────────────────────────────────────────
-  void _drawLabels(Canvas canvas, double w, double h) {
-    _paintLabel(canvas, 'JHARGRAM', w * 0.14, h * 0.52, 9.5, 1.5);
-    _paintLabel(canvas, 'GHORADHARA', w * 0.52, h * 0.65, 8.5, 1.5);
-  }
-
-  void _paintLabel(
-    Canvas canvas,
-    String text,
-    double x,
-    double y,
-    double fontSize,
-    double letterSpacing,
-  ) {
-    final tp = TextPainter(
-      text: TextSpan(
-        text: text,
-        style: TextStyle(
-          color: _labelColor,
-          fontSize: fontSize,
-          fontWeight: FontWeight.w600,
-          letterSpacing: letterSpacing,
-        ),
-      ),
-      textDirection: TextDirection.ltr,
-    )..layout();
-    tp.paint(canvas, Offset(x - tp.width / 2, y - tp.height / 2));
-  }
-
   @override
-  bool shouldRepaint(covariant HomeMapPainter oldDelegate) => false;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-
-// ignore: unused_element
-double _deg2Rad(double degrees) => degrees * math.pi / 180;

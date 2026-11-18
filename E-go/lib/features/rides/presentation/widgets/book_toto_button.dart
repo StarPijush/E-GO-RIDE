@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:e_go/app/theme/colors.dart';
+import 'package:e_go/app/theme/index.dart';
 
 /// Primary booking CTA button for E-GO Rides screen.
 /// Pill-shaped with plus icon and "Book a TOTO" label.
@@ -17,7 +17,7 @@ class BookTotoButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(9999),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x24000000),
+            color: EGoColors.shadow,
             blurRadius: 10,
             offset: Offset(0, 3),
           ),
@@ -28,8 +28,8 @@ class BookTotoButton extends StatelessWidget {
         child: InkWell(
           onTap: onPressed,
           borderRadius: BorderRadius.circular(9999),
-          splashColor: Colors.black.withValues(alpha: 0.1),
-          highlightColor: Colors.black.withValues(alpha: 0.05),
+          splashColor: EGoColors.brandNavy.withValues(alpha: 0.1),
+          highlightColor: EGoColors.brandNavy.withValues(alpha: 0.05),
           child: const Padding(
             padding: EdgeInsets.symmetric(horizontal: 32, vertical: 14),
             child: Row(
@@ -42,7 +42,7 @@ class BookTotoButton extends StatelessWidget {
                 Text(
                   'Book a TOTO',
                   style: TextStyle(
-                    fontFamily: 'Manrope',
+                    fontFamily: EGoTypography.fontFamilyBody,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.2,

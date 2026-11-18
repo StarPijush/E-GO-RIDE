@@ -9,7 +9,7 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: EGoColors.surface,
+      backgroundColor: EGoColors.brandBackground,
       appBar: AppBar(title: const Text('About E-GO')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(EGoSpacing.xxl),
@@ -80,7 +80,7 @@ class AboutScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(EGoSpacing.lg),
               decoration: BoxDecoration(
-                color: EGoColors.grey50,
+                color: EGoColors.surface,
                 borderRadius: BorderRadius.circular(EGoSpacing.radiusLarge),
                 border: Border.all(color: EGoColors.outlineVariant),
               ),
@@ -142,7 +142,7 @@ class _InfoCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(EGoSpacing.lg),
       decoration: BoxDecoration(
-        color: EGoColors.grey50,
+        color: EGoColors.surface,
         borderRadius: BorderRadius.circular(EGoSpacing.radiusLarge),
         border: Border.all(color: EGoColors.outlineVariant),
       ),

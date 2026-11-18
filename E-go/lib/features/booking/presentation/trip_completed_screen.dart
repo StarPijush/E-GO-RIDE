@@ -18,7 +18,7 @@ class TripCompletedScreen extends StatelessWidget {
     final driver = appState.assignedDriver;
 
     return Scaffold(
-      backgroundColor: EGoColors.surface,
+      backgroundColor: EGoColors.brandBackground,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(EGoSpacing.xxl),
@@ -67,22 +67,22 @@ class TripCompletedScreen extends StatelessWidget {
                     Text(
                       'Total fare',
                       style: EGoTypography.bodyMedium.copyWith(
-                        color: EGoColors.brandPrimary,
+                        color: EGoColors.brandNavy,
                       ),
                     ),
                     const SizedBox(height: EGoSpacing.sm),
                     Text(
                       '₹${ride?.fareBreakdown.totalFare.toStringAsFixed(0) ?? vehicle?.fareBreakdown.totalFare.toStringAsFixed(0) ?? '—'}',
                       style: EGoTypography.headlineLarge.copyWith(
-                        color: EGoColors.brandPrimary,
-                        fontWeight: FontWeight.w800,
+                        color: EGoColors.brandNavy,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: EGoSpacing.sm),
                     Text(
                       'Cash payment',
                       style: EGoTypography.bodySmall.copyWith(
-                        color: EGoColors.brandPrimary,
+                        color: EGoColors.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -94,8 +94,9 @@ class TripCompletedScreen extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(EGoSpacing.lg),
                 decoration: BoxDecoration(
-                  color: EGoColors.grey50,
+                  color: EGoColors.surface,
                   borderRadius: BorderRadius.circular(EGoSpacing.radiusXLarge),
+                  border: Border.all(color: EGoColors.outlineVariant),
                 ),
                 child: Column(
                   children: [
@@ -128,7 +129,10 @@ class TripCompletedScreen extends StatelessWidget {
                     _SummaryRow(
                       icon: Icons.person,
                       label: 'Driver',
-                      value: driver?.name ?? ride?.driver.name ?? '—',
+                      value:
+                          driver?.name ??
+                          ride?.driver?.name ??
+                          'Assignment pending',
                     ),
                     const Divider(height: EGoSpacing.xl),
                     _SummaryRow(

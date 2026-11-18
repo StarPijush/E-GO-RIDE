@@ -54,8 +54,8 @@ class EGoLocationInput extends StatelessWidget {
             hintText: hint,
             hintStyle: EGoTypography.bodyMedium.copyWith(
               color: value != null && value!.isNotEmpty
-                  ? EGoColors.grey400
-                  : EGoColors.grey500,
+                  ? EGoColors.onSurfaceMuted
+                  : EGoColors.onSurfaceVariant,
             ),
             prefixIcon: icon != null
                 ? Padding(
@@ -156,7 +156,9 @@ class _EGoSearchInputState extends State<EGoSearchInput> {
       onFieldSubmitted: widget.onSubmitted,
       decoration: InputDecoration(
         hintText: widget.hint,
-        hintStyle: EGoTypography.bodyMedium.copyWith(color: EGoColors.grey500),
+        hintStyle: EGoTypography.bodyMedium.copyWith(
+          color: EGoColors.onSurfaceMuted,
+        ),
         prefixIcon: widget.prefixIcon != null
             ? Padding(
                 padding: const EdgeInsets.all(EGoSpacing.md),
@@ -166,7 +168,7 @@ class _EGoSearchInputState extends State<EGoSearchInput> {
                 padding: const EdgeInsets.all(EGoSpacing.md),
                 child: Icon(
                   Icons.search,
-                  color: EGoColors.grey500,
+                  color: EGoColors.onSurfaceMuted,
                   size: EGoSpacing.iconMedium,
                 ),
               ),
@@ -178,7 +180,7 @@ class _EGoSearchInputState extends State<EGoSearchInput> {
             ? IconButton(
                 icon: Icon(
                   Icons.clear,
-                  color: EGoColors.grey500,
+                  color: EGoColors.onSurfaceMuted,
                   size: EGoSpacing.iconMedium,
                 ),
                 onPressed: () {
@@ -198,100 +200,6 @@ class _EGoSearchInputState extends State<EGoSearchInput> {
         ),
       ),
       style: EGoTypography.bodyLarge,
-    );
-  }
-}
-
-/// E-GO recent destination chip.
-class EGoRecentDestinationChip extends StatelessWidget {
-  const EGoRecentDestinationChip({
-    super.key,
-    required this.label,
-    this.subtitle,
-    this.icon,
-    this.onTap,
-    this.onLongPress,
-    this.selected = false,
-  });
-
-  final String label;
-  final String? subtitle;
-  final Widget? icon;
-  final VoidCallback? onTap;
-  final VoidCallback? onLongPress;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      onLongPress: onLongPress,
-      borderRadius: BorderRadius.circular(EGoSpacing.radiusLarge),
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: EGoSpacing.lg,
-          vertical: EGoSpacing.md,
-        ),
-        decoration: BoxDecoration(
-          color: selected ? EGoColors.brandPrimaryLight : EGoColors.surface,
-          borderRadius: BorderRadius.circular(EGoSpacing.radiusLarge),
-          border: Border.all(
-            color: selected ? EGoColors.brandPrimary : EGoColors.outline,
-            width: selected ? 1.5 : 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            if (icon != null) ...[
-              IconTheme(
-                data: IconThemeData(
-                  color: selected ? EGoColors.brandPrimary : EGoColors.grey500,
-                  size: EGoSpacing.iconMedium,
-                ),
-                child: icon!,
-              ),
-              const SizedBox(width: EGoSpacing.md),
-            ],
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: EGoTypography.bodyMedium.copyWith(
-                      color: selected
-                          ? EGoColors.brandPrimary
-                          : EGoColors.onSurface,
-                      fontWeight: selected ? FontWeight.w500 : FontWeight.w400,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  if (subtitle != null) ...[
-                    const SizedBox(height: EGoSpacing.xs / 2),
-                    Text(
-                      subtitle!,
-                      style: EGoTypography.bodySmall.copyWith(
-                        color: selected
-                            ? EGoColors.brandPrimary.withValues(alpha: 0.7)
-                            : EGoColors.onSurfaceVariant,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            if (selected)
-              Icon(
-                Icons.check_circle,
-                color: EGoColors.brandPrimary,
-                size: EGoSpacing.iconSmall,
-              ),
-          ],
-        ),
-      ),
     );
   }
 }

@@ -57,7 +57,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: EGoColors.surface,
+      backgroundColor: EGoColors.brandBackground,
       appBar: AppBar(
         title: const Text('Edit profile'),
         actions: [
@@ -133,16 +133,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   InputDecoration _dec(String hint) => InputDecoration(
     hintText: hint,
-    hintStyle: EGoTypography.bodyLarge.copyWith(color: EGoColors.grey400),
+    hintStyle: EGoTypography.bodyLarge.copyWith(
+      color: EGoColors.onSurfaceMuted,
+    ),
     filled: true,
-    fillColor: EGoColors.grey100,
+    fillColor: EGoColors.surface,
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(EGoSpacing.radiusLarge),
-      borderSide: BorderSide.none,
+      borderSide: const BorderSide(color: EGoColors.outlineVariant),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(EGoSpacing.radiusLarge),
-      borderSide: const BorderSide(color: EGoColors.brandBlack, width: 2),
+      borderSide: const BorderSide(color: EGoColors.brandNavy, width: 2),
     ),
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(EGoSpacing.radiusLarge),
@@ -168,7 +170,9 @@ class _FieldLabel extends StatelessWidget {
       alignment: Alignment.centerLeft,
       child: Text(
         text,
-        style: EGoTypography.labelMedium.copyWith(color: EGoColors.grey700),
+        style: EGoTypography.labelMedium.copyWith(
+          color: EGoColors.onSurfaceVariant,
+        ),
       ),
     );
   }

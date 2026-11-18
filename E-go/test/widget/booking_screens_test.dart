@@ -14,7 +14,6 @@ import 'package:e_go/features/booking/presentation/ride_rating_screen.dart';
 import 'package:e_go/features/rides/presentation/my_rides_screen.dart';
 import 'package:e_go/features/account/presentation/profile_screen.dart';
 import 'package:e_go/features/location/domain/location_model.dart';
-import 'package:e_go/mock_data/mock_data.dart';
 
 Widget _buildTestWidget(Widget child, AppState appState) {
   return ChangeNotifierProvider<AppState>.value(
@@ -36,7 +35,7 @@ void main() {
         id: 'p-test',
         label: 'Jhargram Station',
         subtitle: 'Station Road',
-        coordinate: MockData.mockCurrentLocation,
+        coordinate: LatLng(22.4529, 86.9003),
       ),
     );
     appState.setDestinationLocation(
@@ -173,7 +172,7 @@ void main() {
       expect(find.text('Your rides'), findsOneWidget);
       expect(find.text('All'), findsOneWidget);
       expect(find.text('Electric TOTOs'), findsOneWidget);
-      expect(find.text('Shared'), findsOneWidget);
+      expect(find.text('Bike'), findsOneWidget);
     });
 
     testWidgets('ProfileScreen renders account options and navigation items', (
@@ -188,7 +187,7 @@ void main() {
       expect(find.text('My rides'), findsOneWidget);
       expect(find.text('Saved places'), findsOneWidget);
       expect(find.text('Payment methods'), findsOneWidget);
-      expect(find.text('Help & Support'), findsOneWidget);
+      expect(find.text('Help & support'), findsOneWidget);
       expect(find.text('Log out'), findsOneWidget);
     });
   });

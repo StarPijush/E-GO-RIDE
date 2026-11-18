@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   E-GO official design tokens (ported from the Flutter customer application).
+   Yellow #FFC928 · Light background #F5F7FA · Deep Navy #142B45
+   --------------------------------------------------------------------------- */
+@theme {
+  --color-brand: #ffc928;
+  --color-brand-strong: #e8b92b;
+  --color-brand-soft: #fff7df;
+  --color-brand-muted: #fffbee;
+  --color-surface: #f5f7fa;
+  --color-surface-raised: #ffffff;
+  --color-navy: #142b45;
+  --color-navy-soft: #eaedf1;
+  --color-ink: #0f1d2b;
+  --color-muted: #5b6b7c;
+  --color-line: #e2e8f0;
+  --color-success: #059669;
+  --color-success-soft: #d1fae5;
+  --color-warning: #d97706;
+  --color-warning-soft: #fef3c7;
+  --color-danger: #dc2626;
+  --color-danger-soft: #fee2e2;
+  --color-info: #0284c7;
+  --color-info-soft: #e0f2fe;
+
+  --radius-card: 16px;
+  --radius-field: 16px;
+  --radius-pill: 9999px;
+
+  --shadow-card: 0 8px 24px rgb(20 43 69 / 0.08);
+  --shadow-sheet: 0 -8px 32px rgb(20 43 69 / 0.12);
+  --shadow-float: 0 12px 32px rgb(20 43 69 / 0.16);
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-poppins), var(--font-inter), ui-sans-serif, sans-serif;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-navy);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+
+  ::selection {
+    background-color: var(--color-brand);
+    color: var(--color-navy);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-navy);
+    outline-offset: 2px;
+  }
+
+  /* The backdrop of a native dialog or sheet. */
+  dialog::backdrop {
+    background: rgb(15 29 43 / 0.48);
+  }
+
+  dialog[open]::backdrop {
+    animation: ego-fade-in 120ms ease-out;
+  }
+}
+
+/* The keyframes live outside the layer, so Tailwind always emits them. */
+@keyframes ego-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Leaflet must never paint over sticky headers, sheets or dialogs. */
+.leaflet-container {
+  z-index: 0;
+  background: var(--color-navy-soft);
+  font-family: var(--font-sans);
+}
+
+/* The markers are drawn with inline styles - the default icon box must not
+   add a background or a border of its own. */
+.ego-map-marker {
+  background: transparent;
+  border: 0;
+}
+
+.leaflet-control-attribution {
+  font-size: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* The universal selector does not reach a pseudo element. */
+  dialog[open]::backdrop {
+    animation: none !important;
+  }
+}

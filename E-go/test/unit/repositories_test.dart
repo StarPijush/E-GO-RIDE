@@ -9,7 +9,6 @@ import 'package:e_go/features/booking/data/driver_repository.dart';
 import 'package:e_go/features/booking/data/booking_repository.dart';
 import 'package:e_go/features/location/data/location_repository.dart';
 import 'package:e_go/features/location/domain/location_model.dart';
-import 'package:e_go/mock_data/mock_data.dart';
 
 void main() {
   setUp(() {
@@ -37,18 +36,11 @@ void main() {
       expect(searchEmpty, isEmpty);
     });
 
-    test('Location repository returns recent destinations', () async {
-      final repo = LocationRepository();
-      final recent = await repo.getRecentDestinations();
-      expect(recent, isNotEmpty);
-      expect(recent.length, greaterThanOrEqualTo(2));
-    });
-
     test(
       'Vehicle repository returns Bike and Toto options with valid pricing',
       () async {
         final repo = MockVehicleRepository();
-        const from = MockData.mockCurrentLocation;
+        const from = LatLng(22.4529, 86.9003);
         const to = LatLng(22.4701, 86.9152);
 
         final vehicles = await repo.getAvailableVehicles(from: from, to: to);
@@ -85,7 +77,7 @@ void main() {
       const pickup = SavedLocation(
         id: 'p1',
         label: 'Jhargram Station',
-        coordinate: MockData.mockCurrentLocation,
+        coordinate: LatLng(22.4529, 86.9003),
       );
       const dest = SavedLocation(
         id: 'd1',

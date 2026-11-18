@@ -16,7 +16,7 @@ class PaymentMethodsScreen extends StatelessWidget {
     final currentMethod = appState.paymentMethod;
 
     return Scaffold(
-      backgroundColor: EGoColors.grey50,
+      backgroundColor: EGoColors.brandBackground,
       appBar: AppBar(title: const Text('Payment methods')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(EGoSpacing.lg),
@@ -172,7 +172,7 @@ class _PaymentOptionCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(EGoSpacing.radiusLarge),
           border: Border.all(
             color: isSelected
-                ? EGoColors.brandPrimary
+                ? EGoColors.brandPrimaryBorder
                 : EGoColors.outlineVariant,
             width: isSelected ? 2.0 : 1.0,
           ),
@@ -244,7 +244,7 @@ class _PaymentOptionCard extends StatelessWidget {
             ),
             Icon(
               isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-              color: isSelected ? EGoColors.brandPrimary : EGoColors.grey400,
+              color: isSelected ? EGoColors.brandNavy : EGoColors.grey400,
               size: 22,
             ),
           ],

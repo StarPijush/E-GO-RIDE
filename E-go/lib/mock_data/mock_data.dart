@@ -8,45 +8,7 @@ import 'package:e_go/features/location/domain/location_model.dart';
 abstract class MockData {
   // Jhargram, West Bengal coordinates
   static const LatLng jhargramCenter = LatLng(22.4529, 86.9003);
-
-  // Mock current location (Jhargram Station area)
-  static const LatLng mockCurrentLocation = LatLng(22.4550, 86.9020);
-
-  // Mock recent destinations
-  static const List<RecentDestination> recentDestinations = [
-    RecentDestination(
-      id: '1',
-      label: 'Jhargram Bazar',
-      subtitle: 'Market area',
-      coordinate: LatLng(22.4701, 86.9152),
-      icon: Icons.store,
-      type: PlaceType.market,
-    ),
-    RecentDestination(
-      id: '2',
-      label: 'Jhargram Railway Station',
-      subtitle: 'Station Road',
-      coordinate: LatLng(22.4529, 86.9003),
-      icon: Icons.train,
-      type: PlaceType.transport,
-    ),
-    RecentDestination(
-      id: '3',
-      label: 'Jhargram Palace',
-      subtitle: 'Tourist spot',
-      coordinate: LatLng(22.4480, 86.8950),
-      icon: Icons.account_balance,
-      type: PlaceType.landmark,
-    ),
-    RecentDestination(
-      id: '4',
-      label: 'Kendua Market',
-      subtitle: 'Local market',
-      coordinate: LatLng(22.4650, 86.9100),
-      icon: Icons.shopping_basket,
-      type: PlaceType.market,
-    ),
-  ];
+  static const LatLng mockCurrentLocation = LatLng(22.4529, 86.9003);
 
   // Mock suggested/searchable places
   static const List<SuggestedPlace> suggestedPlaces = [
@@ -134,6 +96,13 @@ abstract class MockData {
       coordinate: LatLng(22.5000, 86.9800),
       type: PlaceType.other,
     ),
+    SuggestedPlace(
+      id: 's13',
+      name: 'Kanak Durga Temple',
+      address: 'Chilkigarh, Jhargram',
+      coordinate: LatLng(22.4633, 86.8122),
+      type: PlaceType.landmark,
+    ),
   ];
 
   // Saved home/work locations placeholder
@@ -191,24 +160,6 @@ abstract class MockData {
           'E-GO operates from 6:00 AM to 10:00 PM. Hours may expand as the service grows.',
     ),
   ];
-}
-
-class RecentDestination {
-  const RecentDestination({
-    required this.id,
-    required this.label,
-    required this.subtitle,
-    required this.coordinate,
-    required this.icon,
-    required this.type,
-  });
-
-  final String id;
-  final String label;
-  final String subtitle;
-  final LatLng coordinate;
-  final IconData icon;
-  final PlaceType type;
 }
 
 class SuggestedPlace {

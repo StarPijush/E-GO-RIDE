@@ -48,7 +48,7 @@ class _DriverAssignedScreenState extends State<DriverAssignedScreen> {
     }
 
     return Scaffold(
-      backgroundColor: EGoColors.grey50,
+      backgroundColor: EGoColors.brandBackground,
       appBar: AppBar(
         title: const Text('Driver assigned'),
         automaticallyImplyLeading: false,
@@ -153,7 +153,7 @@ class _DriverAssignedScreenState extends State<DriverAssignedScreen> {
                                       const Icon(
                                         Icons.star,
                                         size: 14,
-                                        color: Color(0xFFFBBC04),
+                                        color: EGoColors.brandYellowDark,
                                       ),
                                       const SizedBox(width: 3),
                                       Text(
@@ -334,7 +334,7 @@ class _DriverAssignedScreenState extends State<DriverAssignedScreen> {
                 }
               },
               label: 'Track driver',
-              icon: const Icon(Icons.navigation, color: EGoColors.white),
+              icon: const Icon(Icons.navigation, color: EGoColors.onPrimary),
             ),
           ),
         ],

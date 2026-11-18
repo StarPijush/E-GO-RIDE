@@ -11,7 +11,7 @@ class RideDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final fare = ride.fareBreakdown;
     return Scaffold(
-      backgroundColor: EGoColors.grey50,
+      backgroundColor: EGoColors.brandBackground,
       appBar: AppBar(title: const Text('Ride details')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(EGoSpacing.lg),
@@ -84,7 +84,7 @@ class RideDetailsScreen extends StatelessWidget {
                             (i) => Icon(
                               i < ride.rating! ? Icons.star : Icons.star_border,
                               size: 16,
-                              color: const Color(0xFFFBBC04),
+                              color: EGoColors.brandYellowDark,
                             ),
                           ),
                         ),
@@ -226,36 +226,41 @@ class RideDetailsScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(ride.driver.name, style: EGoTypography.titleSmall),
+                        Text(
+                          ride.driver?.name ?? 'Driver assignment pending',
+                          style: EGoTypography.titleSmall,
+                        ),
                         Text(
                           ride.vehicleName,
                           style: EGoTypography.bodySmall.copyWith(
                             color: EGoColors.grey500,
                           ),
                         ),
-                        Text(
-                          ride.driver.vehicleNumber,
-                          style: EGoTypography.bodySmall.copyWith(
-                            color: EGoColors.grey500,
+                        if (ride.driver != null)
+                          Text(
+                            ride.driver!.vehicleNumber,
+                            style: EGoTypography.bodySmall.copyWith(
+                              color: EGoColors.grey500,
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.star,
-                        size: 14,
-                        color: Color(0xFFFBBC04),
-                      ),
-                      const SizedBox(width: 3),
-                      Text(
-                        '${ride.driver.rating}',
-                        style: EGoTypography.labelMedium,
-                      ),
-                    ],
-                  ),
+                  if (ride.driver != null)
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.star,
+                          size: 14,
+                          color: EGoColors.brandYellowDark,
+                        ),
+                        const SizedBox(width: 3),
+                        Text(
+                          '${ride.driver!.rating}',
+                          style: EGoTypography.labelMedium,
+                        ),
+                      ],
+                    ),
                 ],
               ),
             ),

@@ -38,7 +38,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ListTile(
                 title: const Text('English'),
                 trailing: _selectedLanguage == 'English'
-                    ? const Icon(Icons.check, color: EGoColors.brandPrimary)
+                    ? const Icon(Icons.check, color: EGoColors.brandNavy)
                     : null,
                 onTap: () {
                   setState(() => _selectedLanguage = 'English');
@@ -48,7 +48,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ListTile(
                 title: const Text('বাংলা (Bengali)'),
                 trailing: _selectedLanguage == 'বাংলা (Bengali)'
-                    ? const Icon(Icons.check, color: EGoColors.brandPrimary)
+                    ? const Icon(Icons.check, color: EGoColors.brandNavy)
                     : null,
                 onTap: () {
                   setState(() => _selectedLanguage = 'বাংলা (Bengali)');
@@ -65,7 +65,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: EGoColors.grey50,
+      backgroundColor: EGoColors.brandBackground,
       appBar: AppBar(title: const Text('Settings')),
       body: ListView(
         padding: const EdgeInsets.all(EGoSpacing.lg),
@@ -75,10 +75,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: 'Preferences',
             children: [
               ListTile(
-                leading: const Icon(
-                  Icons.language,
-                  color: EGoColors.brandPrimary,
-                ),
+                leading: const Icon(Icons.language, color: EGoColors.brandNavy),
                 title: const Text('App Language'),
                 subtitle: Text(_selectedLanguage),
                 trailing: const Icon(
@@ -103,7 +100,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   'Notifications when driver arrives or begins trip',
                 ),
                 value: _pushNotifications,
-                activeThumbColor: EGoColors.brandPrimary,
+                activeThumbColor: EGoColors.brandNavy,
+                activeTrackColor: EGoColors.brandPrimary,
                 onChanged: (val) => setState(() => _pushNotifications = val),
               ),
               const Divider(height: 1, indent: 56),
@@ -114,7 +112,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   'Receive important ride notifications via SMS',
                 ),
                 value: _smsUpdates,
-                activeThumbColor: EGoColors.brandPrimary,
+                activeThumbColor: EGoColors.brandNavy,
+                activeTrackColor: EGoColors.brandPrimary,
                 onChanged: (val) => setState(() => _smsUpdates = val),
               ),
               const Divider(height: 1, indent: 56),
@@ -125,7 +124,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   'Special discounts and coupons for Jhargram rides',
                 ),
                 value: _promotionalOffers,
-                activeThumbColor: EGoColors.brandPrimary,
+                activeThumbColor: EGoColors.brandNavy,
+                activeTrackColor: EGoColors.brandPrimary,
                 onChanged: (val) => setState(() => _promotionalOffers = val),
               ),
             ],
@@ -210,7 +210,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   if (context.mounted) {
                     Navigator.pushNamedAndRemoveUntil(
                       context,
-                      EGoRouter.splash,
+                      EGoRouter.login,
                       (_) => false,
                     );
                   }

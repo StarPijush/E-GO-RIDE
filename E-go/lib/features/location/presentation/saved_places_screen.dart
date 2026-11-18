@@ -127,7 +127,7 @@ class _SavedPlacesScreenState extends State<SavedPlacesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: EGoColors.grey50,
+      backgroundColor: EGoColors.brandBackground,
       appBar: AppBar(title: const Text('Saved places')),
       body: _places.isEmpty
           ? EGoEmptyState(
@@ -157,7 +157,7 @@ class _SavedPlacesScreenState extends State<SavedPlacesScreen> {
                         EGoSpacing.radiusLarge,
                       ),
                     ),
-                    child: const Icon(Icons.delete, color: Colors.white),
+                    child: const Icon(Icons.delete, color: EGoColors.white),
                   ),
                   onDismissed: (_) => _removePlace(place.id),
                   child: Container(
@@ -179,7 +179,7 @@ class _SavedPlacesScreenState extends State<SavedPlacesScreen> {
                         ),
                         child: Icon(
                           place.icon,
-                          color: EGoColors.brandPrimary,
+                          color: EGoColors.brandNavy,
                           size: 22,
                         ),
                       ),
@@ -209,7 +209,7 @@ class _SavedPlacesScreenState extends State<SavedPlacesScreen> {
           child: EGoPrimaryButton(
             onPressed: _addNewPlace,
             label: 'Add a new place',
-            icon: const Icon(Icons.add, color: EGoColors.brandBlack),
+            icon: const Icon(Icons.add, color: EGoColors.onPrimary),
           ),
         ),
       ),

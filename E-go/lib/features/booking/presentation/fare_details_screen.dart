@@ -26,7 +26,7 @@ class FareDetailsScreen extends StatelessWidget {
     final fare = vehicle.fareBreakdown;
 
     return Scaffold(
-      backgroundColor: EGoColors.grey50,
+      backgroundColor: EGoColors.brandBackground,
       appBar: AppBar(
         title: const Text('Fare breakdown'),
         leading: IconButton(

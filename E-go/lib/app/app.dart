@@ -27,7 +27,10 @@ class _EGoMaterialApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: EGoTheme.light,
       initialRoute: EGoRouter.splash,
-      onGenerateRoute: EGoRouter.generateRoute,
+      onGenerateRoute: (settings) => EGoRouter.generateRoute(
+        settings,
+        isAuthenticated: () => context.read<AppState>().isLoggedIn,
+      ),
       supportedLocales: const [Locale('en', 'US')],
     );
   }

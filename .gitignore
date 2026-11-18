@@ -1,20 +1,15 @@
 # ─────────────────────────────────────────────────────────────
-# E-GO Monorepo — Git Ignore Configuration
+# E-GO Monorepo — Root .gitignore
 # ─────────────────────────────────────────────────────────────
 
-# Proprietary / Internal Reference Documents (Do not track)
+# ── Proprietary / Internal Reference Documents ──────────────
+# These directories contain competitive analysis and internal
+# reference material that must not be published publicly.
 rapido-analysis/
 toto-go-blueprint/
 EGO-AGENT-INSTRUCTIONS.md
 
-# Flutter Web Platform & Build Artifacts
-web/
-**/web/
-build/
-**/build/
-build/web/
-
-# Dart & Flutter SDK artifacts
+# ── Flutter / Dart Build Artifacts ──────────────────────────
 .dart_tool/
 **/.dart_tool/
 .pub/
@@ -22,20 +17,100 @@ build/web/
 .pub-cache/
 **/.pub-cache/
 .flutter-plugins
+**/.flutter-plugins
 .flutter-plugins-dependencies
 **/.flutter-plugins-dependencies
+/build/
+# NOTE: Do NOT ignore E-go/web/ — it contains required Flutter web source files
+# Only ignore the build output subdirectory
+E-go/build/
+E-go-rider/build/
+E-go-admin/build/
 
-# IDE, Editor & OS files
+# ── Flutter Platform Build Output ───────────────────────────
+# Android build output (keep source files in android/)
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+**/android/app/build/
+# iOS build output (keep source files in ios/)
+**/ios/Flutter/.last_build_id
+# Dart build artifacts
+app.*.symbols
+app.*.map.json
+
+# ── Dart Documentation Generated ────────────────────────────
+**/doc/api/
+
+# ── Node.js / React / Next.js ───────────────────────────────
+node_modules/
+**/node_modules/
+.next/
+**/.next/
+/out/
+*.tsbuildinfo
+next-env.d.ts
+
+# ── Python / Backend ────────────────────────────────────────
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+**/.pytest_cache/
+.mypy_cache/
+**/.mypy_cache/
+.ruff_cache/
+**/.ruff_cache/
+.venv/
+**/.venv/
+venv/
+**/venv/
+
+# ── Environment Files and Secrets ───────────────────────────
+# Never commit real credentials. Only safe templates are allowed.
+.env
+.env.*
+!.env.example
+!.env.template
+*.pem
+*.p12
+*.jks
+*.keystore
+*.key
+google-services.json
+GoogleService-Info.plist
+**/google-services.json
+**/GoogleService-Info.plist
+service-account*.json
+**/service-account*.json
+
+# ── Coverage and Test Output ─────────────────────────────────
+# (Do NOT ignore test SOURCE files — only generated output)
+coverage/
+**/coverage/
+test-results/
+**/test-results/
+playwright-report/
+**/playwright-report/
+test-output/
+**/test-output/
+*.lcov
+test/screenshots/
+**/test/screenshots/
+
+# ── IDE and Editor Files ─────────────────────────────────────
 .idea/
 **/.idea/
 *.iml
-**/*.iml
 *.ipr
 *.iws
-.vscode/
-**/.vscode/
+# VS Code workspace settings (project launch configs may be shared)
+# .vscode/ is NOT ignored — project launch/debug configs may be intentional.
+# Ignore only personal VS Code state:
+.vscode/*.log
 
-# System / OS generated files
+# ── OS Generated Files ───────────────────────────────────────
 .DS_Store
 .DS_Store?
 ._*
@@ -44,11 +119,33 @@ build/web/
 ehthumbs.db
 Thumbs.db
 [Dd]esktop.ini
+desktop.ini
 
-# Logs & temp files
+# ── Logs and Temporary Files ─────────────────────────────────
 *.log
-*.sqlite
-*.sqlite3
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 *.tmp
 *.bak
+*.swp
+*.sqlite
+*.sqlite3
 
+# ── Yarn / pnpm ──────────────────────────────────────────────
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.pnp.cjs
+.pnp.loader.mjs
+
+# ── Vercel ───────────────────────────────────────────────────
+.vercel
+
+# ── Build/Distribution Directories ───────────────────────────
+# Only generated output — not source
+dist/
+**/dist/
+out/
+# Do NOT ignore src/ or app/ or lib/ — those are source

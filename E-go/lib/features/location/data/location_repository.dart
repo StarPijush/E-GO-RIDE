@@ -1,4 +1,3 @@
-import 'package:latlong2/latlong.dart';
 import 'package:e_go/features/location/domain/location_model.dart';
 import 'package:e_go/mock_data/mock_data.dart';
 
@@ -39,31 +38,5 @@ class LocationRepository {
           ),
         )
         .toList();
-  }
-
-  Future<List<SavedLocation>> getRecentDestinations() async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    return MockData.recentDestinations
-        .map(
-          (r) => SavedLocation(
-            id: r.id,
-            label: r.label,
-            subtitle: r.subtitle,
-            coordinate: r.coordinate,
-            icon: r.icon,
-            type: r.type,
-          ),
-        )
-        .toList();
-  }
-
-  Future<LatLng?> getCurrentLocation() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    return MockData.mockCurrentLocation;
-  }
-
-  Future<void> saveRecentDestination(SavedLocation location) async {
-    // TODO: Persist to local storage
-    await Future.delayed(const Duration(milliseconds: 50));
   }
 }

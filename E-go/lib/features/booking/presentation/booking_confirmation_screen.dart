@@ -26,7 +26,7 @@ class BookingConfirmationScreen extends StatelessWidget {
     final fare = vehicle.fareBreakdown;
 
     return Scaffold(
-      backgroundColor: EGoColors.grey50,
+      backgroundColor: EGoColors.brandBackground,
       appBar: AppBar(
         title: const Text('Confirm booking'),
         leading: IconButton(
@@ -241,7 +241,7 @@ class BookingConfirmationScreen extends StatelessWidget {
                 await appState.confirmBooking();
               },
               label: 'Confirm booking',
-              icon: const Icon(Icons.check, color: EGoColors.white),
+              icon: const Icon(Icons.check, color: EGoColors.onPrimary),
             ),
           ),
         ],

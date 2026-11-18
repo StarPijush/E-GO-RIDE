@@ -26,14 +26,21 @@ class MockDriver {
   final IconData avatarIcon;
 }
 
-class MockDriverRepository {
+abstract class DriverRepository {
+  Future<MockDriver> getAssignedDriver();
+  Future<MockDriver> getAssignedTotoDriver();
+}
+
+class MockDriverRepository implements DriverRepository {
   /// Returns a simulated assigned driver.
   /// All data is demo data — no real driver is dispatched.
+  @override
   Future<MockDriver> getAssignedDriver() async {
     await Future.delayed(const Duration(seconds: 2));
     return _demoBikeDriver;
   }
 
+  @override
   Future<MockDriver> getAssignedTotoDriver() async {
     await Future.delayed(const Duration(seconds: 2));
     return _demoTotoDriver;

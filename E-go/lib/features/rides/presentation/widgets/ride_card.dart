@@ -24,12 +24,12 @@ class RideCard extends StatelessWidget {
         child: Ink(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: EGoColors.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: EGoColors.divider, width: 1.0),
             boxShadow: const [
               BoxShadow(
-                color: Color(0x0A000000),
+                color: EGoColors.shadow,
                 blurRadius: 8,
                 offset: Offset(0, 2),
               ),
@@ -52,7 +52,7 @@ class RideCard extends StatelessWidget {
                   Text(
                     ride.vehicleName,
                     style: const TextStyle(
-                      fontFamily: 'Manrope',
+                      fontFamily: EGoTypography.fontFamilyBody,
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                       color: EGoColors.brandBlack,
@@ -87,7 +87,7 @@ class RideCard extends StatelessWidget {
                     child: Text(
                       ride.pickupLocation.label,
                       style: const TextStyle(
-                        fontFamily: 'Manrope',
+                        fontFamily: EGoTypography.fontFamilyBody,
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
                         color: EGoColors.onSurfaceText,
@@ -115,7 +115,7 @@ class RideCard extends StatelessWidget {
                     child: Text(
                       ride.destinationLocation.label,
                       style: const TextStyle(
-                        fontFamily: 'Manrope',
+                        fontFamily: EGoTypography.fontFamilyBody,
                         fontSize: 13,
                         fontWeight: FontWeight.w400,
                         color: EGoColors.onSurfaceText,
@@ -141,7 +141,7 @@ class RideCard extends StatelessWidget {
                   Text(
                     _formatDate(ride.bookedAt),
                     style: const TextStyle(
-                      fontFamily: 'Manrope',
+                      fontFamily: EGoTypography.fontFamilyBody,
                       fontSize: 12,
                       fontWeight: FontWeight.w400,
                       color: EGoColors.onSurfaceVariantText,
@@ -153,13 +153,13 @@ class RideCard extends StatelessWidget {
                         const Icon(
                           Icons.star,
                           size: 14,
-                          color: Color(0xFFF5B33B),
+                          color: EGoColors.brandYellowDark,
                         ),
                         const SizedBox(width: 3),
                         Text(
                           '${ride.rating}',
                           style: const TextStyle(
-                            fontFamily: 'Manrope',
+                            fontFamily: EGoTypography.fontFamilyBody,
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: EGoColors.onSurfaceText,
@@ -170,7 +170,7 @@ class RideCard extends StatelessWidget {
                       Text(
                         '₹${ride.fareBreakdown.totalFare.toStringAsFixed(0)}',
                         style: const TextStyle(
-                          fontFamily: 'Manrope',
+                          fontFamily: EGoTypography.fontFamilyBody,
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: EGoColors.onSurfaceText,
@@ -191,23 +191,19 @@ class RideCard extends StatelessWidget {
     final (label, bg, fg) = switch (status) {
       RideStatus.completed => (
         'Completed',
-        const Color(0xFFD1FAE5),
-        const Color(0xFF059669),
+        EGoColors.successLight,
+        EGoColors.success,
       ),
       RideStatus.cancelled => (
         'Cancelled',
-        const Color(0xFFFEE2E2),
-        const Color(0xFFDC2626),
+        EGoColors.errorLight,
+        EGoColors.error,
       ),
-      RideStatus.active => (
-        'Active',
-        const Color(0xFFE0F2FE),
-        const Color(0xFF0284C7),
-      ),
+      RideStatus.active => ('Active', EGoColors.infoLight, EGoColors.info),
       RideStatus.upcoming => (
         'Upcoming',
-        const Color(0xFFFEF3C7),
-        const Color(0xFFD97706),
+        EGoColors.warningLight,
+        EGoColors.warning,
       ),
     };
 
@@ -220,7 +216,7 @@ class RideCard extends StatelessWidget {
       child: Text(
         label,
         style: TextStyle(
-          fontFamily: 'Manrope',
+          fontFamily: EGoTypography.fontFamilyBody,
           fontSize: 11,
           fontWeight: FontWeight.w700,
           color: fg,

@@ -25,7 +25,7 @@ class _RideTrackingScreenState extends State<RideTrackingScreen> {
   int _tripProgress = 0; // 0-100
   bool _driverArrived = false;
   bool _tripStarted = false;
-  LatLng _driverPosition = MockData.mockCurrentLocation;
+  LatLng _driverPosition = MockData.jhargramCenter;
 
   @override
   void initState() {
@@ -36,7 +36,7 @@ class _RideTrackingScreenState extends State<RideTrackingScreen> {
   void _simulateDriverMovement() {
     final appState = context.read<AppState>();
     final pickup =
-        appState.pickupLocation?.coordinate ?? MockData.mockCurrentLocation;
+        appState.pickupLocation?.coordinate ?? MockData.jhargramCenter;
     final dest =
         appState.destinationLocation?.coordinate ?? MockData.jhargramCenter;
 
@@ -54,10 +54,10 @@ class _RideTrackingScreenState extends State<RideTrackingScreen> {
           // Move driver toward pickup
           final t = _tripProgress / 40;
           _driverPosition = LatLng(
-            MockData.mockCurrentLocation.latitude +
-                (pickup.latitude - MockData.mockCurrentLocation.latitude) * t,
-            MockData.mockCurrentLocation.longitude +
-                (pickup.longitude - MockData.mockCurrentLocation.longitude) * t,
+            MockData.jhargramCenter.latitude +
+                (pickup.latitude - MockData.jhargramCenter.latitude) * t,
+            MockData.jhargramCenter.longitude +
+                (pickup.longitude - MockData.jhargramCenter.longitude) * t,
           );
         } else if (_tripProgress == 45 && !_driverArrived) {
           _driverArrived = true;
@@ -105,7 +105,7 @@ class _RideTrackingScreenState extends State<RideTrackingScreen> {
   Widget build(BuildContext context) {
     final appState = context.watch<AppState>();
     final pickup =
-        appState.pickupLocation?.coordinate ?? MockData.mockCurrentLocation;
+        appState.pickupLocation?.coordinate ?? MockData.jhargramCenter;
     final dest =
         appState.destinationLocation?.coordinate ?? MockData.jhargramCenter;
     final driver = appState.assignedDriver;
@@ -157,7 +157,7 @@ class _RideTrackingScreenState extends State<RideTrackingScreen> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black26,
+                            color: EGoColors.shadow,
                             blurRadius: 4,
                             offset: Offset(0, 2),
                           ),
@@ -226,7 +226,7 @@ class _RideTrackingScreenState extends State<RideTrackingScreen> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Color(0x1A000000),
+                    color: EGoColors.shadow,
                     blurRadius: 20,
                     offset: Offset(0, -4),
                   ),
@@ -246,7 +246,7 @@ class _RideTrackingScreenState extends State<RideTrackingScreen> {
                     width: 40,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: EGoColors.grey300,
+                      color: EGoColors.outlineVariant,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -256,7 +256,7 @@ class _RideTrackingScreenState extends State<RideTrackingScreen> {
                     value: _tripProgress / 100,
                     backgroundColor: EGoColors.grey200,
                     valueColor: const AlwaysStoppedAnimation<Color>(
-                      EGoColors.brandPrimary,
+                      EGoColors.brandYellowDark,
                     ),
                     minHeight: 4,
                     borderRadius: BorderRadius.circular(2),
@@ -274,7 +274,7 @@ class _RideTrackingScreenState extends State<RideTrackingScreen> {
                         ),
                         child: const Icon(
                           Icons.person,
-                          color: EGoColors.brandPrimary,
+                          color: EGoColors.brandNavy,
                           size: 28,
                         ),
                       ),

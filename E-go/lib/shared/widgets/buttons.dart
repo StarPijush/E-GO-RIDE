@@ -31,7 +31,7 @@ class EGoPrimaryButton extends StatelessWidget {
             height: EGoSpacing.iconMedium,
             child: const CircularProgressIndicator(
               strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(EGoColors.brandBlack),
+              valueColor: AlwaysStoppedAnimation<Color>(EGoColors.onPrimary),
             ),
           )
         : Row(
@@ -45,7 +45,7 @@ class EGoPrimaryButton extends StatelessWidget {
               Text(
                 label,
                 style: EGoTypography.labelLarge.copyWith(
-                  color: EGoColors.brandBlack,
+                  color: EGoColors.onPrimary,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -55,8 +55,6 @@ class EGoPrimaryButton extends StatelessWidget {
     final button = FilledButton(
       onPressed: isLoading ? null : onPressed,
       style: FilledButton.styleFrom(
-        backgroundColor: EGoColors.brandPrimary,
-        foregroundColor: EGoColors.brandBlack,
         minimumSize: Size(
           isFullWidth && expanded ? double.infinity : 0,
           height ?? EGoSpacing.buttonHeight,
@@ -106,7 +104,7 @@ class EGoSecondaryButton extends StatelessWidget {
         Text(
           label,
           style: EGoTypography.labelLarge.copyWith(
-            color: EGoColors.brandBlack,
+            color: EGoColors.onSurface,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -116,8 +114,6 @@ class EGoSecondaryButton extends StatelessWidget {
     final button = OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
-        foregroundColor: EGoColors.brandBlack,
-        side: const BorderSide(color: EGoColors.brandBlack, width: 1.5),
         minimumSize: Size(
           isFullWidth && expanded ? double.infinity : 0,
           height ?? EGoSpacing.buttonHeight,

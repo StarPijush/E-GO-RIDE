@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:e_go/app/theme/colors.dart';
+import 'package:e_go/app/theme/index.dart';
 
 /// Clean minimal header for E-GO Rides screen.
 /// Displays "Your rides" title and a circular 40x40 history action button.
@@ -20,7 +20,7 @@ class RidesHeader extends StatelessWidget {
             child: Text(
               'Your rides',
               style: TextStyle(
-                fontFamily: 'Manrope',
+                fontFamily: EGoTypography.fontFamilyDisplay,
                 fontSize: 28,
                 fontWeight: FontWeight.w700,
                 color: EGoColors.onSurfaceText,

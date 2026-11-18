@@ -2,43 +2,41 @@ import 'package:flutter/material.dart';
 import 'colors.dart';
 
 /// E-GO typography tokens.
-/// Dark high-contrast text, clean hierarchy, Bengali + English support.
 abstract class EGoTypography {
-  // Font families
-  static const String fontFamilyPrimary = 'Roboto';
-  static const String fontFamilyNumbers = 'Roboto';
+  static const String fontFamilyDisplay = 'Poppins';
+  static const String fontFamilyBody = 'Inter';
+  static const String fontFamilyNumbers = 'Inter';
+  static const String fontFamilyPrimary = fontFamilyBody;
 
-  // Display
   static const TextStyle displayLarge = TextStyle(
-    fontFamily: fontFamilyPrimary,
+    fontFamily: fontFamilyDisplay,
     fontSize: 57,
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w600,
     letterSpacing: -0.25,
     height: 1.12,
     color: EGoColors.onSurface,
   );
 
   static const TextStyle displayMedium = TextStyle(
-    fontFamily: fontFamilyPrimary,
+    fontFamily: fontFamilyDisplay,
     fontSize: 45,
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w600,
     letterSpacing: 0,
     height: 1.16,
     color: EGoColors.onSurface,
   );
 
   static const TextStyle displaySmall = TextStyle(
-    fontFamily: fontFamilyPrimary,
+    fontFamily: fontFamilyDisplay,
     fontSize: 36,
-    fontWeight: FontWeight.w400,
+    fontWeight: FontWeight.w600,
     letterSpacing: 0,
     height: 1.22,
     color: EGoColors.onSurface,
   );
 
-  // Headline
   static const TextStyle headlineLarge = TextStyle(
-    fontFamily: fontFamilyPrimary,
+    fontFamily: fontFamilyDisplay,
     fontSize: 32,
     fontWeight: FontWeight.w600,
     letterSpacing: 0,
@@ -47,7 +45,7 @@ abstract class EGoTypography {
   );
 
   static const TextStyle headlineMedium = TextStyle(
-    fontFamily: fontFamilyPrimary,
+    fontFamily: fontFamilyDisplay,
     fontSize: 28,
     fontWeight: FontWeight.w600,
     letterSpacing: 0,
@@ -56,7 +54,7 @@ abstract class EGoTypography {
   );
 
   static const TextStyle headlineSmall = TextStyle(
-    fontFamily: fontFamilyPrimary,
+    fontFamily: fontFamilyDisplay,
     fontSize: 24,
     fontWeight: FontWeight.w600,
     letterSpacing: 0,
@@ -64,18 +62,17 @@ abstract class EGoTypography {
     color: EGoColors.onSurface,
   );
 
-  // Title
   static const TextStyle titleLarge = TextStyle(
-    fontFamily: fontFamilyPrimary,
+    fontFamily: fontFamilyDisplay,
     fontSize: 22,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w600,
     letterSpacing: 0,
     height: 1.27,
     color: EGoColors.onSurface,
   );
 
   static const TextStyle titleMedium = TextStyle(
-    fontFamily: fontFamilyPrimary,
+    fontFamily: fontFamilyBody,
     fontSize: 16,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.15,
@@ -84,7 +81,7 @@ abstract class EGoTypography {
   );
 
   static const TextStyle titleSmall = TextStyle(
-    fontFamily: fontFamilyPrimary,
+    fontFamily: fontFamilyBody,
     fontSize: 14,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.1,
@@ -92,9 +89,8 @@ abstract class EGoTypography {
     color: EGoColors.onSurface,
   );
 
-  // Body
   static const TextStyle bodyLarge = TextStyle(
-    fontFamily: fontFamilyPrimary,
+    fontFamily: fontFamilyBody,
     fontSize: 16,
     fontWeight: FontWeight.w400,
     letterSpacing: 0.5,
@@ -103,7 +99,7 @@ abstract class EGoTypography {
   );
 
   static const TextStyle bodyMedium = TextStyle(
-    fontFamily: fontFamilyPrimary,
+    fontFamily: fontFamilyBody,
     fontSize: 14,
     fontWeight: FontWeight.w400,
     letterSpacing: 0.25,
@@ -112,7 +108,7 @@ abstract class EGoTypography {
   );
 
   static const TextStyle bodySmall = TextStyle(
-    fontFamily: fontFamilyPrimary,
+    fontFamily: fontFamilyBody,
     fontSize: 12,
     fontWeight: FontWeight.w400,
     letterSpacing: 0.4,
@@ -120,9 +116,8 @@ abstract class EGoTypography {
     color: EGoColors.onSurfaceVariant,
   );
 
-  // Label
   static const TextStyle labelLarge = TextStyle(
-    fontFamily: fontFamilyPrimary,
+    fontFamily: fontFamilyBody,
     fontSize: 14,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.1,
@@ -131,7 +126,7 @@ abstract class EGoTypography {
   );
 
   static const TextStyle labelMedium = TextStyle(
-    fontFamily: fontFamilyPrimary,
+    fontFamily: fontFamilyBody,
     fontSize: 12,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.5,
@@ -140,7 +135,7 @@ abstract class EGoTypography {
   );
 
   static const TextStyle labelSmall = TextStyle(
-    fontFamily: fontFamilyPrimary,
+    fontFamily: fontFamilyBody,
     fontSize: 11,
     fontWeight: FontWeight.w500,
     letterSpacing: 0.5,
@@ -148,18 +143,26 @@ abstract class EGoTypography {
     color: EGoColors.onSurfaceVariant,
   );
 
-  // Custom: Brand heading
+  static const TextStyle navigationLabel = TextStyle(
+    fontFamily: fontFamilyBody,
+    fontSize: 11,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 0.2,
+    height: 1.27,
+    color: EGoColors.onSurfaceVariant,
+  );
+
   static const TextStyle brandTitle = TextStyle(
-    fontFamily: fontFamilyPrimary,
+    fontFamily: fontFamilyDisplay,
     fontSize: 28,
     fontWeight: FontWeight.w700,
     letterSpacing: -0.5,
     height: 1.2,
-    color: EGoColors.brandBlack,
+    color: EGoColors.brandNavy,
   );
 
   static const TextStyle brandTagline = TextStyle(
-    fontFamily: fontFamilyPrimary,
+    fontFamily: fontFamilyBody,
     fontSize: 14,
     fontWeight: FontWeight.w400,
     letterSpacing: 0.2,

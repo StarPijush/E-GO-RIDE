@@ -28,6 +28,26 @@ enum PlaceType {
   other,
 }
 
+/// Shared icon mapping for location lists.
+IconData iconForPlaceType(PlaceType type) {
+  switch (type) {
+    case PlaceType.market:
+      return Icons.storefront;
+    case PlaceType.transport:
+      return Icons.train;
+    case PlaceType.landmark:
+      return Icons.account_balance;
+    case PlaceType.hospital:
+      return Icons.local_hospital;
+    case PlaceType.education:
+      return Icons.school;
+    case PlaceType.residential:
+      return Icons.home;
+    case PlaceType.other:
+      return Icons.place;
+  }
+}
+
 /// Domain model for a saved/recent location.
 class SavedLocation {
   const SavedLocation({

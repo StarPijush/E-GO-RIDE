@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:e_go/app/theme/colors.dart';
 
 /// Convenient extensions on BuildContext.
 extension ContextExtensions on BuildContext {
@@ -13,7 +14,7 @@ extension ContextExtensions on BuildContext {
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? Colors.red.shade800 : null,
+        backgroundColor: isError ? EGoColors.error : null,
         behavior: SnackBarBehavior.floating,
       ),
     );

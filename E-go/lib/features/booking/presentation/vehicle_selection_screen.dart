@@ -23,17 +23,7 @@ class _VehicleSelectionScreenState extends State<VehicleSelectionScreen> {
   @override
   void initState() {
     super.initState();
-    final appState = context.read<AppState>();
-    _selected = appState.selectedVehicle;
-    // Auto-select first if none selected
-    if (_selected == null && appState.availableVehicles.isNotEmpty) {
-      _selected = appState.availableVehicles.first;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && _selected != null) {
-          context.read<AppState>().selectVehicle(_selected!);
-        }
-      });
-    }
+    _selected = context.read<AppState>().selectedVehicle;
   }
 
   void _selectVehicle(VehicleOption v) {
@@ -55,7 +45,7 @@ class _VehicleSelectionScreenState extends State<VehicleSelectionScreen> {
     final isLoading = appState.vehiclesLoading;
 
     return Scaffold(
-      backgroundColor: EGoColors.grey50,
+      backgroundColor: EGoColors.brandBackground,
       appBar: AppBar(
         title: const Text('Choose vehicle'),
         leading: IconButton(
@@ -83,7 +73,7 @@ class _VehicleSelectionScreenState extends State<VehicleSelectionScreen> {
                 ? const Center(
                     child: CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(
-                        EGoColors.brandPrimary,
+                        EGoColors.brandNavy,
                       ),
                     ),
                   )
@@ -142,7 +132,10 @@ class _VehicleSelectionScreenState extends State<VehicleSelectionScreen> {
                 EGoPrimaryButton(
                   onPressed: _selected != null ? _proceed : null,
                   label: 'Continue',
-                  icon: const Icon(Icons.arrow_forward, color: EGoColors.white),
+                  icon: const Icon(
+                    Icons.arrow_forward,
+                    color: EGoColors.onPrimary,
+                  ),
                 ),
               ],
             ),
@@ -279,11 +272,15 @@ class _VehicleCard extends StatelessWidget {
                         color: EGoColors.grey500,
                       ),
                       const SizedBox(width: 3),
-                      Text(
-                        '${vehicle.fareBreakdown.estimatedArrivalMinutes} min arrival · '
-                        '${vehicle.fareBreakdown.estimatedMinutes} min trip',
-                        style: EGoTypography.labelSmall.copyWith(
-                          color: EGoColors.grey500,
+                      Expanded(
+                        child: Text(
+                          '${vehicle.fareBreakdown.estimatedArrivalMinutes} min arrival · '
+                          '${vehicle.fareBreakdown.estimatedMinutes} min trip',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: EGoTypography.labelSmall.copyWith(
+                            color: EGoColors.grey500,
+                          ),
                         ),
                       ),
                     ],

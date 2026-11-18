@@ -1,60 +1,99 @@
-# E-GO — Engineering Hub
+# E-GO — Engineering Monorepo
 
-E-GO is a ride-hailing and local mobility platform for **Jhargram, West Bengal, India**.
-Initial vehicle categories: **E-rickshaw / Toto** and **Bike taxi**.
-Business model: independent drivers, commission-based platform, cash payments initially.
+E-GO is a modern ride-hailing and local mobility platform designed specifically for **Jhargram, West Bengal, India**. The ecosystem focuses primarily on **E-rickshaws (Toto)** and **Bike taxis**, providing seamless on-demand booking, transparent pricing, and local mobility access.
 
-## Repository layout
+---
+
+## 1. Repository Layout
 
 ```
-E-go/            Customer Flutter application (Android + iOS)
-E-go-rider/      Driver Flutter application (Android + iOS)
-E-go-admin/      Admin Flutter application (Flutter Web)
-backend/         Shared backend (REST API + workers + migrations)
-packages/        Shared Dart packages
-infrastructure/  Docker, database, CI/CD, monitoring, env templates
-docs/            Architecture, decisions, API, database, development, security
+D:\E-RICKSHAW RIDE
+├── E-go/            Customer Mobile Application (Flutter for Android, iOS & Web)
+├── E-go-web/        Customer Web Portal (Next.js 16, React 19, TypeScript, Tailwind)
+├── E-go-rider/      Driver Partner Application (Flutter — scaffolded for upcoming phase)
+├── E-go-admin/      Administrative Console (Flutter Web — scaffolded for upcoming phase)
+├── backend/         Backend services, REST APIs, database migrations, and workers
+├── packages/        Shared Dart packages (e_go_core, e_go_design_system)
+├── infrastructure/  Docker, CI/CD, database schemas, and deployment configurations
+└── docs/            System architecture, booking workflows, navigation, and web specs
 ```
 
-## Applications
+---
 
-1. **E-go** — Customer-facing app: registration, phone OTP, pickup/destination,
-   map integration, fare estimation, booking, live driver tracking, trip status,
-   trip history, cash payment, ratings, notifications, customer support.
-2. **E-go-rider** — Driver-facing app: registration, document upload, approval status,
-   online/offline, location updates, booking requests, navigation, trip lifecycle,
-   cash collection, earnings/commission, ratings, notifications.
-3. **E-go-admin** — Administrative console (Flutter Web): RBAC, customer/driver/vehicle
-   management, document verification, active trip monitoring, fare/commission config,
-   service-area management, support tickets, reports/analytics, fraud monitoring, audit logs.
+## 2. Applications Status & Capabilities
 
-## Official Branding
+### 🟢 `E-go` — Customer Mobile Application (Implemented & Test-Verified)
+- **Tech Stack:** Flutter 3.x, Dart 3.x, Sound Null Safety, Provider (`AppState`), `flutter_map` (OpenStreetMap).
+- **Status:** **Implemented** with rich mock-data repositories and offline-first simulation:
+  - **Phone OTP Authentication:** Seamless 10-digit Indian phone login, OTP verification, and onboarding sequence.
+  - **Map-First Home Screen:** Interactive Jhargram map canvas, responsive destination discovery panel ("Where to?").
+  - **Three-Stage Booking Journey:** Stage 1 (Discovery) → Stage 2 (Location Selection with interactive map pin) → Stage 3 (Place Order with live fare estimates & Toto vehicle selection).
+  - **Gooey Fluid Navigation:** Custom canvas-rendered liquid tab bar connecting Home, My Rides, Safety, and Account.
+  - **Help & Support:** Categorized searchable FAQs, interactive accordion, and direct support modals.
+  - **Safety Center:** Trusted emergency contacts, ride sharing, and quick SOS emergency trigger.
+  - **My Rides & History:** Filter tabs (Active, Completed, Cancelled) with trip summaries.
+  - **Automated Test Suite:** +290 passing tests spanning unit, widget, responsive viewports, and integration flows.
 
-The visual identity of E-GO is built around official yellow-and-black brand tokens:
-- **Primary Brand Yellow:** `#F5C928`
-- **Primary Brand Black:** `#171717`
-- **Surface & Backgrounds:** White (`#FFFFFF`) with subtle warm neutrals (`#FAFAF7`)
-- **Semantic Status Colors:** Retained standard green (`#1A7F5A`), amber (`#B45309`), and red (`#B91C1C`) for trip states and alerts.
+### 🟢 `E-go-web` — Customer Web Portal (Implemented)
+- **Tech Stack:** Next.js 16 (App Router), React 19, TypeScript 5.9, Tailwind CSS 4, Leaflet map engine.
+- **Status:** **Implemented** for desktop and mobile web browsers:
+  - Interactive booking flow with address lookups and OpenStreetMap integration.
+  - Simulated customer auth and deterministic ride lifecycle state machine.
+  - Responsive design tokens aligned with E-GO branding.
 
-## Development principles
+### 🟡 `E-go-rider` — Driver Partner Application (Scaffolded)
+- **Tech Stack:** Flutter / Dart.
+- **Status:** Architecture and directory layout scaffolded. Driver onboarding, document verification, ride dispatch, and turn-by-turn navigation scheduled for next release phase.
 
-- **Sound null safety**, effective Dart, strong typing, clear naming.
-- **Feature-oriented architecture** in each app; predictable state management;
-  separation of UI and business logic.
-- **Server-authoritative state**: clients are thin. Every ride-state transition is
-  validated server-side; clients hold optimistic `pending*` variants only.
-- **Contract-first API**: the API is defined before it is implemented.
-- **Cash = ledger**: `cash_ledger` is authoritative; completion ≠ collection.
-- **English** for all code, comments, docs and reports; product strings are
-  Bengali-first + English.
-- **Tests are release gates**: no merge to main without unit tests passing.
+### 🟡 `E-go-admin` — Administrative Console (Scaffolded)
+- **Tech Stack:** Flutter Web.
+- **Status:** Architecture and directory layout scaffolded. Driver verification, active fleet tracking, dynamic fare configuration, and dispatch analytics scheduled for upcoming phase.
 
-## Customer App Verification
+### 🟡 `backend`, `packages` & `infrastructure` (Scaffolded)
+- Database migration schemas, Docker templates, shared design tokens, and CI/CD pipelines scaffolded in modular directories.
 
-The customer application (`E-go`) is verified and test-ready:
+---
+
+## 3. Official Brand Identity
+
+The E-GO design language reflects clean contrast, accessibility, and high visibility:
+
+- **Primary Brand Yellow:** `#FFC928` / `#F5C928` (High-visibility Toto vehicle identity)
+- **Deep Navy & Core Black:** `#142B45` and `#171717` (Strong typographic hierarchy)
+- **Surfaces & Backgrounds:** Crisp White (`#FFFFFF`) with soft neutrals (`#F5F7FA`)
+- **Semantic Indicators:** Green (`#16A34A` for completed rides), Amber (`#D97706` for in-flight/matching), Red (`#DC2626` for emergencies/cancellations)
+- **Typography:** **Manrope** for primary headings and brand accents; **Inter** for clean body text and numeric displays.
+
+---
+
+## 4. Development Setup
+
+### Running the Customer Flutter App (`E-go`)
 ```powershell
 cd E-go
-flutter analyze
+flutter pub get
 flutter test
+flutter run
 ```
-All unit and integration tests passing.
+
+### Running the Customer Web App (`E-go-web`)
+```powershell
+cd E-go-web
+npm install
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## 5. Documentation Directory
+
+Detailed specifications and architectural decisions live in the [`docs/`](docs/) directory:
+
+- [Booking System Architecture](docs/booking_system/booking_system_architecture.md)
+- [Booking Workflow & State Transitions](docs/booking_system/booking_workflow.md)
+- [Global Navigation Architecture](docs/navigation/global_navigation_architecture.md)
+- [Help & Support Specification](docs/help_support/help_support_implementation_report.md)
+- [Customer Web Architecture](docs/web/ego_web_architecture.md)
+- [Flutter App Documentation](E-go/docs/)
+- [Repository Cleanup & Audit Reports](docs/repository_cleanup/)

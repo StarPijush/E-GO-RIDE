@@ -15,7 +15,7 @@ class NotificationsScreen extends StatelessWidget {
     final notifications = appState.notifications;
 
     return Scaffold(
-      backgroundColor: EGoColors.grey50,
+      backgroundColor: EGoColors.brandBackground,
       appBar: AppBar(
         title: const Text('Notifications'),
         actions: [
@@ -83,7 +83,7 @@ class NotificationsScreen extends StatelessWidget {
                             size: 18,
                             color: item.isRead
                                 ? EGoColors.grey600
-                                : EGoColors.white,
+                                : EGoColors.onPrimary,
                           ),
                         ),
                         const SizedBox(width: EGoSpacing.md),

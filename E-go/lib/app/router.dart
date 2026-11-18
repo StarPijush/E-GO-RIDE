@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:e_go/features/auth/presentation/splash_screen.dart';
-import 'package:e_go/features/auth/presentation/onboarding_screen.dart';
+import 'package:e_go/features/onboarding/presentation/screens/onboarding_screen_one.dart';
+import 'package:e_go/features/onboarding/presentation/screens/onboarding_screen_two.dart';
+import 'package:e_go/features/onboarding/presentation/screens/onboarding_screen_three.dart';
 import 'package:e_go/features/auth/presentation/login_screen.dart';
 import 'package:e_go/features/auth/presentation/otp_screen.dart';
 import 'package:e_go/features/auth/presentation/profile_setup_screen.dart';
-import 'package:e_go/features/home/presentation/home_screen.dart';
-import 'package:e_go/features/location/presentation/pickup_selection_screen.dart';
-import 'package:e_go/features/location/presentation/destination_selection_screen.dart';
+import 'package:e_go/features/location/presentation/location_selection_screen.dart';
+import 'package:e_go/features/location/presentation/location_selection_target.dart';
+import 'package:e_go/features/location/presentation/map_location_picker_screen.dart';
 import 'package:e_go/features/location/presentation/saved_places_screen.dart';
 import 'package:e_go/features/booking/presentation/vehicle_selection_screen.dart';
+import 'package:e_go/features/booking/presentation/place_order_screen.dart';
 import 'package:e_go/features/booking/presentation/fare_details_screen.dart';
 import 'package:e_go/features/booking/presentation/booking_confirmation_screen.dart';
 import 'package:e_go/features/booking/presentation/searching_driver_screen.dart';
@@ -16,9 +19,7 @@ import 'package:e_go/features/booking/presentation/driver_assigned_screen.dart';
 import 'package:e_go/features/booking/presentation/ride_tracking_screen.dart';
 import 'package:e_go/features/booking/presentation/trip_completed_screen.dart';
 import 'package:e_go/features/booking/presentation/ride_rating_screen.dart';
-import 'package:e_go/features/rides/presentation/my_rides_screen.dart';
 import 'package:e_go/features/rides/presentation/ride_details_screen.dart';
-import 'package:e_go/features/account/presentation/profile_screen.dart';
 import 'package:e_go/features/account/presentation/edit_profile_screen.dart';
 import 'package:e_go/features/account/presentation/payment_methods_screen.dart';
 import 'package:e_go/features/account/presentation/settings_screen.dart';
@@ -26,6 +27,7 @@ import 'package:e_go/features/account/presentation/about_screen.dart';
 import 'package:e_go/features/notifications/presentation/notifications_screen.dart';
 import 'package:e_go/features/support/presentation/help_support_screen.dart';
 import 'package:e_go/features/booking/data/booking_repository.dart';
+import 'package:e_go/shared/shell/ego_main_shell.dart';
 
 /// E-GO application router.
 /// Defines all navigation routes for the complete customer application.
@@ -33,18 +35,25 @@ class EGoRouter {
   // Module A: Onboarding & Auth
   static const String splash = '/';
   static const String onboarding = '/onboarding';
+  static const String onboardingTwo = '/onboarding-2';
+  static const String onboardingThree = '/onboarding-3';
   static const String login = '/login';
+  static const String createAccount = '/create-account';
+  static const String register = '/register';
   static const String otp = '/otp';
   static const String profileSetup = '/profile-setup';
 
   // Module B: Home & Location
   static const String home = '/home';
+  static const String locationSelection = '/location-selection';
+  static const String mapLocationPicker = '/map-location-picker';
   static const String pickupSelection = '/pickup-selection';
   static const String destinationSelection = '/destination-selection';
   static const String savedPlaces = '/saved-places';
 
   // Module C: Vehicle Selection & Booking Lifecycle
   static const String vehicleSelection = '/vehicle-selection';
+  static const String placeOrder = '/place-order';
   static const String fareDetails = '/fare-details';
   static const String bookingConfirmation = '/booking-confirmation';
   static const String searchingDriver = '/searching-driver';
@@ -63,8 +72,53 @@ class EGoRouter {
   static const String helpSupport = '/help-support';
   static const String settings = '/settings';
   static const String about = '/about';
+  static const String safety = '/safety';
 
-  static Route<dynamic> generateRoute(RouteSettings settings) {
+  /// Routes that require an authenticated customer session.
+  static const Set<String> protectedRoutes = {
+    home,
+    locationSelection,
+    mapLocationPicker,
+    pickupSelection,
+    destinationSelection,
+    savedPlaces,
+    vehicleSelection,
+    placeOrder,
+    fareDetails,
+    bookingConfirmation,
+    searchingDriver,
+    driverAssigned,
+    rideTracking,
+    tripCompleted,
+    rideRating,
+    myRides,
+    rideDetails,
+    profile,
+    editProfile,
+    paymentMethods,
+    notifications,
+    settings,
+    safety,
+  };
+
+  /// Builds a route for [settings].
+  ///
+  /// When [isAuthenticated] is supplied (the real app does this), protected
+  /// customer routes redirect to Login for unauthenticated sessions. Tests and
+  /// previews that omit it retain direct access to route widgets.
+  static Route<dynamic> generateRoute(
+    RouteSettings settings, {
+    bool Function()? isAuthenticated,
+  }) {
+    if (isAuthenticated != null &&
+        !isAuthenticated() &&
+        protectedRoutes.contains(settings.name)) {
+      return MaterialPageRoute(
+        builder: (_) => const LoginScreen(),
+        settings: const RouteSettings(name: login),
+      );
+    }
+
     switch (settings.name) {
       // Module A
       case splash:
@@ -74,12 +128,28 @@ class EGoRouter {
         );
       case onboarding:
         return MaterialPageRoute(
-          builder: (_) => const OnboardingScreen(),
+          builder: (_) => const OnboardingScreenOne(),
+          settings: settings,
+        );
+      case onboardingTwo:
+        return MaterialPageRoute(
+          builder: (_) => const OnboardingScreenTwo(),
+          settings: settings,
+        );
+      case onboardingThree:
+        return MaterialPageRoute(
+          builder: (_) => const OnboardingScreenThree(),
           settings: settings,
         );
       case login:
         return MaterialPageRoute(
           builder: (_) => const LoginScreen(),
+          settings: settings,
+        );
+      case createAccount:
+      case register:
+        return MaterialPageRoute(
+          builder: (_) => const CreateAccountScreen(),
           settings: settings,
         );
       case otp:
@@ -97,17 +167,34 @@ class EGoRouter {
       // Module B
       case home:
         return MaterialPageRoute(
-          builder: (_) => const EGoHomeScreen(),
+          builder: (_) => const EGoMainShell(initialIndex: 0),
+          settings: settings,
+        );
+      case locationSelection:
+        return MaterialPageRoute(
+          builder: (_) => const LocationSelectionScreen(),
+          settings: settings,
+        );
+      case mapLocationPicker:
+        final target = settings.arguments;
+        return MaterialPageRoute<MapLocationPickerResult>(
+          builder: (_) => MapLocationPickerScreen(
+            target: target is LocationSelectionTarget
+                ? target
+                : LocationSelectionTarget.destination,
+          ),
           settings: settings,
         );
       case pickupSelection:
-        return MaterialPageRoute(
-          builder: (_) => const PickupSelectionScreen(),
+        return MaterialPageRoute<MapLocationPickerResult>(
+          builder: (_) => const MapLocationPickerScreen(
+            target: LocationSelectionTarget.pickup,
+          ),
           settings: settings,
         );
       case destinationSelection:
         return MaterialPageRoute(
-          builder: (_) => const DestinationSelectionScreen(),
+          builder: (_) => const LocationSelectionScreen(),
           settings: settings,
         );
       case savedPlaces:
@@ -120,6 +207,11 @@ class EGoRouter {
       case vehicleSelection:
         return MaterialPageRoute(
           builder: (_) => const VehicleSelectionScreen(),
+          settings: settings,
+        );
+      case placeOrder:
+        return MaterialPageRoute(
+          builder: (_) => const PlaceOrderScreen(),
           settings: settings,
         );
       case fareDetails:
@@ -161,7 +253,7 @@ class EGoRouter {
       // Module D
       case myRides:
         return MaterialPageRoute(
-          builder: (_) => const MyRidesScreen(),
+          builder: (_) => const EGoMainShell(initialIndex: 1),
           settings: settings,
         );
       case rideDetails:
@@ -172,7 +264,7 @@ class EGoRouter {
         );
       case profile:
         return MaterialPageRoute(
-          builder: (_) => const ProfileScreen(),
+          builder: (_) => const EGoMainShell(initialIndex: 3),
           settings: settings,
         );
       case editProfile:
@@ -203,6 +295,11 @@ class EGoRouter {
       case about:
         return MaterialPageRoute(
           builder: (_) => const AboutScreen(),
+          settings: settings,
+        );
+      case safety:
+        return MaterialPageRoute(
+          builder: (_) => const EGoMainShell(initialIndex: 2),
           settings: settings,
         );
 
