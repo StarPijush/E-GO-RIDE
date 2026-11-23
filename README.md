@@ -1,6 +1,6 @@
 # E-GO — Engineering Monorepo
 
-E-GO is a modern ride-hailing and local mobility platform designed specifically for **Jhargram, West Bengal, India**. The ecosystem focuses primarily on **E-rickshaws (Toto)** and **Bike taxis**, providing seamless on-demand booking, transparent pricing, and local mobility access.
+E-GO is a ride-hailing platform for **Toto/e-rickshaw trips in Jhargram, West Bengal, India**. The MVP is Toto-only, cash-only, phone-OTP authenticated, and on-demand.
 
 ---
 
@@ -12,7 +12,7 @@ D:\E-RICKSHAW RIDE
 ├── E-go-web/        Customer Web Portal (Next.js 16, React 19, TypeScript, Tailwind)
 ├── E-go-rider/      Driver Partner Application (Flutter — scaffolded for upcoming phase)
 ├── E-go-admin/      Administrative Console (Flutter Web — scaffolded for upcoming phase)
-├── backend/         Backend services, REST APIs, database migrations, and workers
+├── backend/         Go API foundation, Supabase/PostGIS migrations, RLS, and contracts
 ├── packages/        Shared Dart packages (e_go_core, e_go_design_system)
 ├── infrastructure/  Docker, CI/CD, database schemas, and deployment configurations
 └── docs/            System architecture, booking workflows, navigation, and web specs
@@ -49,8 +49,9 @@ D:\E-RICKSHAW RIDE
 - **Tech Stack:** Flutter Web.
 - **Status:** Architecture and directory layout scaffolded. Driver verification, active fleet tracking, dynamic fare configuration, and dispatch analytics scheduled for upcoming phase.
 
-### 🟡 `backend`, `packages` & `infrastructure` (Scaffolded)
-- Database migration schemas, Docker templates, shared design tokens, and CI/CD pipelines scaffolded in modular directories.
+### 🟡 `backend` (Stage 0 foundation) · `packages` & `infrastructure` (placeholders)
+- The Go API currently provides health/readiness, Supabase JWT verification, and pgx transaction foundations. PostgreSQL schema and RLS are defined; booking, dispatch, ride, location, cash, and admin workflows are not implemented.
+- Shared Dart packages and infrastructure automation remain unimplemented.
 
 ---
 

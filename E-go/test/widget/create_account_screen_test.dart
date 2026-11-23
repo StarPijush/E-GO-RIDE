@@ -105,12 +105,12 @@ void main() {
         expect(find.text('Create account'), findsOneWidget);
         expect(find.textContaining('Already have an account?'), findsOneWidget);
         expect(find.textContaining('Log in'), findsOneWidget);
-        expect(
-          find.text(
-            'By continuing, you agree to our Terms of Service & Privacy Policy',
-          ),
-          findsOneWidget,
-        );
+
+        // Terms & Privacy Consent Checkbox
+        expect(find.byKey(const Key('terms_consent_row')), findsOneWidget);
+        expect(find.textContaining('I agree to the'), findsOneWidget);
+        expect(find.textContaining('Terms of Service'), findsOneWidget);
+        expect(find.textContaining('Privacy Policy'), findsOneWidget);
       },
     );
 
@@ -202,8 +202,13 @@ void main() {
         await tester.pump();
         expect(tester.widget<InkWell>(ctaButton).onTap, isNull);
 
-        // 4. Enter valid 8-char password -> Now ENABLED
+        // 4. Enter valid 8-char password -> Still disabled (terms not accepted)
         await tester.enterText(passwordField, 'ValidPass8');
+        await tester.pump();
+        expect(tester.widget<InkWell>(ctaButton).onTap, isNull);
+
+        // 5. Accept terms -> Now ENABLED
+        await tester.tap(find.byKey(const Key('terms_consent_row')));
         await tester.pump();
         expect(tester.widget<InkWell>(ctaButton).onTap, isNotNull);
       },
@@ -240,6 +245,9 @@ void main() {
         await tester.enterText(nameField, 'Rahul Sen');
         await tester.enterText(phoneField, '9876543210');
         await tester.enterText(passwordField, 'ValidPass8');
+        await tester.pump();
+        // Accept terms first
+        await tester.tap(find.byKey(const Key('terms_consent_row')));
         await tester.pump();
         expect(tester.widget<InkWell>(ctaButton).onTap, isNotNull);
 
@@ -304,6 +312,9 @@ void main() {
       await tester.enterText(phoneField, '9876543210');
       await tester.enterText(passwordField, 'ValidPass8');
       await tester.pump();
+      // Accept terms
+      await tester.tap(find.byKey(const Key('terms_consent_row')));
+      await tester.pump();
 
       // Tap submit
       await tester.tap(find.byKey(const Key('create_account_button')));
@@ -331,7 +342,10 @@ void main() {
       );
       await tester.pump(const Duration(milliseconds: 200));
 
-      await tester.tap(find.textContaining('Log in'));
+      // Scroll down to make the footer visible
+      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -100));
+      await tester.pumpAndSettle();
+      await tester.tap(find.textContaining('Log in').last);
       await tester.pump();
       expect(loginNavCalled, isTrue);
     });

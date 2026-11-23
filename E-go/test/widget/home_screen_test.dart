@@ -13,7 +13,6 @@ import 'package:e_go/features/home/presentation/widgets/home_current_location_ma
 import 'package:e_go/features/home/presentation/widgets/popular_destination_card.dart';
 import 'package:e_go/features/home/presentation/widgets/recent_destination_card.dart';
 import 'package:e_go/features/location/domain/location_model.dart';
-import 'package:e_go/mock_data/mock_data.dart';
 
 import '../helpers/test_tile_provider.dart';
 

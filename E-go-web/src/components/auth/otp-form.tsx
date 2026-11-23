@@ -7,10 +7,8 @@ import { ArrowLeft } from "lucide-react";
 
 import { AuthShell } from "@/components/layout/auth-shell";
 import { Badge, Button, Card, OtpInput, useToast } from "@/components/ui";
-import { isDemoAuthEnabled } from "@/lib/config/env";
 import { ROUTES } from "@/lib/config/routes";
 import { authCopy, errorMessage, otpCooldownCopy } from "@/lib/domain/labels";
-import { getDemoOtp } from "@/lib/repositories";
 import { formatPhoneDisplay } from "@/lib/utils/phone";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -23,23 +21,26 @@ export interface OtpFormProps {
   sent: boolean;
   /** Where the passenger goes after the verification. */
   returnTo: string;
+  /** The demo OTP from the server page; `null` when demo mode is off. */
+  demoOtp: string | null;
 }
 
 const backLinkClass =
   'inline-flex size-11 items-center justify-center rounded-full text-navy transition-colors hover:bg-navy-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy focus-visible:ring-offset-2';
 
-export function OtpForm({ phone, mode, sent, returnTo }: OtpFormProps) {
+export function OtpForm({ phone, mode, sent, returnTo, demoOtp }: OtpFormProps) {
   const router = useRouter();
   const { show } = useToast();
 
   const requestOtp = useAuthStore((state) => state.requestOtp);
   const verifyOtp = useAuthStore((state) => state.verifyOtp);
   const pending = useAuthStore((state) => state.pending);
+  const otpCooldownUntil = useAuthStore((state) => state.otpCooldownUntil);
+  const otpPreview = useAuthStore((state) => state.otpPreview);
 
   const [code, setCode] = useState("");
   const [localError, setLocalError] = useState<string | null>(null);
   const [remaining, setRemaining] = useState(0);
-  const [devOtp, setDevOtp] = useState<string | null>(null);
 
   /** The code is requested exactly once, even in StrictMode. */
   const requested = useRef(false);
@@ -71,9 +72,18 @@ export function OtpForm({ phone, mode, sent, returnTo }: OtpFormProps) {
         return;
       }
       setRemaining(result.data.cooldownSeconds);
-      if (result.data.devOtp && isDemoAuthEnabled) setDevOtp(result.data.devOtp);
     })();
   }, [phone, requestOtp, sent]);
+
+  // The login screen requested the code before navigating here, so the
+  // countdown starts from the cooldown the store recorded.
+  useEffect(() => {
+    if (!sent || !otpCooldownUntil) return;
+
+    // The mount read of the persisted cooldown has to wait for the client.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setRemaining(Math.max(0, Math.ceil((otpCooldownUntil - Date.now()) / 1000)));
+  }, [sent, otpCooldownUntil]);
 
   const handleVerify = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -109,6 +119,7 @@ export function OtpForm({ phone, mode, sent, returnTo }: OtpFormProps) {
 
   const backHref = mode === "register" ? ROUTES.createAccount : ROUTES.login;
   const titleSegments = authCopy.otp.title.split("\n");
+  const visibleOtp = demoOtp ?? otpPreview;
 
   return (
     <AuthShell
@@ -154,12 +165,12 @@ export function OtpForm({ phone, mode, sent, returnTo }: OtpFormProps) {
           {remaining > 0 ? otpCooldownCopy(remaining) : authCopy.otp.resend}
         </Button>
 
-        {isDemoAuthEnabled ? (
+        {visibleOtp ? (
           <Card className="border-dashed border-brand" padding="md">
             <div className="flex flex-col gap-3">
               <p className="text-xs font-medium text-navy">
-                {authCopy.otp.demoHint}
-                {devOtp ? <span className="text-muted"> ({devOtp})</span> : null}
+                {demoOtp ? authCopy.otp.demoHint : authCopy.otp.mockHint}
+                <span className="text-muted"> ({visibleOtp})</span>
               </p>
               <Button
                 type="button"
@@ -167,11 +178,11 @@ export function OtpForm({ phone, mode, sent, returnTo }: OtpFormProps) {
                 fullWidth
                 disabled={busy}
                 onClick={() => {
-                  setCode(getDemoOtp() ?? "123456");
+                  setCode(visibleOtp);
                   setLocalError(null);
                 }}
               >
-                Fill demo code
+                {demoOtp ? "Fill demo code" : "Fill code"}
               </Button>
             </div>
           </Card>

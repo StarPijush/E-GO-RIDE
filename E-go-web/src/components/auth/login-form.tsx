@@ -9,20 +9,21 @@ import { AuthShell } from "@/components/layout/auth-shell";
 import { Button, Card, IconButton, Input, useToast } from "@/components/ui";
 import { ROUTES } from "@/lib/config/routes";
 import { authCopy, errorMessage } from "@/lib/domain/labels";
-import { getDemoCredentials } from "@/lib/repositories";
 import { normalizePhoneDigits } from "@/lib/utils/phone";
 import { useAuthStore } from "@/stores/auth-store";
 
 export interface LoginFormProps {
   /** Where the passenger goes after a successful login. */
   returnTo: string;
+  /** The demo login from the server page; `null` when demo mode is off. */
+  demo: { phone: string; password: string } | null;
 }
 
 /** The link class of the footer links. */
 const linkClass =
   'font-semibold text-navy underline underline-offset-2 transition-colors hover:text-navy/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy focus-visible:ring-offset-2';
 
-export function LoginForm({ returnTo }: LoginFormProps) {
+export function LoginForm({ returnTo, demo }: LoginFormProps) {
   const router = useRouter();
   const { show } = useToast();
 
@@ -38,9 +39,6 @@ export function LoginForm({ returnTo }: LoginFormProps) {
   const submitting = pending === 'login';
   const otpSubmitting = pending === 'requestOtp';
   const busy = submitting || otpSubmitting;
-
-  // The demo credentials only exist while demo mode is enabled.
-  const demo = getDemoCredentials();
 
   const clearError = () => setLocalError(null);
 
@@ -115,9 +113,6 @@ export function LoginForm({ returnTo }: LoginFormProps) {
               Create account
             </Link>
           </p>
-          <Link href={ROUTES.helpSupport} className={linkClass}>
-            Help
-          </Link>
         </div>
       }
     >

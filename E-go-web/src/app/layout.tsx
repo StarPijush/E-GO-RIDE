@@ -2,6 +2,8 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
+import { Providers } from "@/components/providers";
+
 import { inter, poppins } from "./fonts";
 import "./globals.css";
 
@@ -32,7 +34,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         >
           Skip to content
         </a>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

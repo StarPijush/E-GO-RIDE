@@ -92,6 +92,28 @@ describe('otp', () => {
     expect(result.ok).toBe(false);
     expect(store.getState().lastError?.code).toBe('not_found');
     expect(store.getState().otpCooldownUntil).toBeNull();
+    expect(store.getState().otpPreview).toBeNull();
+  });
+
+  it('keeps the generated mock code outside demo mode so the OTP screen can show it', async () => {
+    const { store } = await loadStore(false);
+
+    const registered = await store.getState().register({
+      fullName: 'Web User',
+      phone: '9876543222',
+      password: 'Password@123',
+    });
+    expect(registered.ok).toBe(true);
+
+    const requested = await store.getState().requestOtp('9876543222');
+    expect(requested.ok).toBe(true);
+    if (!requested.ok) return;
+
+    expect(requested.data.devOtp).toMatch(/^\d{6}$/);
+    expect(store.getState().otpPreview).toBe(requested.data.devOtp);
+
+    const verified = await store.getState().verifyOtp('9876543222', requested.data.devOtp ?? '');
+    expect(verified.ok).toBe(true);
   });
 
   it('verifies the demo code without a prior request', async () => {

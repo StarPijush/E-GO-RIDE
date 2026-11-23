@@ -13,7 +13,12 @@ import 'package:e_go/features/location/domain/location_model.dart';
 import 'package:e_go/features/location/presentation/location_selection_screen.dart';
 import 'package:e_go/features/location/presentation/location_selection_target.dart';
 import 'package:e_go/features/location/presentation/map_location_picker_screen.dart';
-import 'package:e_go/features/location/presentation/widgets/location_selection_field.dart';
+import 'package:e_go/features/location/presentation/widgets/location_route_card.dart';
+import 'package:e_go/features/location/presentation/widgets/pickup_timing_selector.dart';
+import 'package:e_go/features/location/presentation/widgets/place_category_selector.dart';
+import 'package:e_go/features/location/presentation/widgets/recent_places_content.dart';
+import 'package:e_go/features/location/presentation/widgets/saved_places_content.dart';
+import 'package:e_go/features/location/presentation/widgets/select_on_map_button.dart';
 
 import '../helpers/test_tile_provider.dart';
 
@@ -24,7 +29,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  Widget app(AppState state) {
+  Widget buildTestApp(AppState state) {
     return ChangeNotifierProvider<AppState>.value(
       value: state,
       child: MaterialApp(
@@ -44,7 +49,7 @@ void main() {
           }
           if (settings.name == EGoRouter.placeOrder) {
             return MaterialPageRoute(
-              builder: (_) => const Scaffold(body: Text('Place order')),
+              builder: (_) => const Scaffold(body: Text('Place order screen')),
             );
           }
           return null;
@@ -53,136 +58,376 @@ void main() {
     );
   }
 
-  testWidgets('renders honest empty state and no global navigation', (
-    tester,
-  ) async {
-    final state = AppState();
-    await tester.pumpWidget(app(state));
-    await tester.pumpAndSettle();
+  group('E-GO Location Selection Page Tests', () {
+    testWidgets('renders all core components and verifies structure', (
+      tester,
+    ) async {
+      final state = AppState();
+      await tester.pumpWidget(buildTestApp(state));
+      await tester.pumpAndSettle();
 
-    expect(find.text('Select your locations'), findsOneWidget);
-    expect(find.byType(LocationSelectionField), findsNWidgets(2));
-    expect(find.text('Choose pickup location'), findsOneWidget);
-    expect(find.text('Choose drop location'), findsOneWidget);
-    expect(find.text('Select on map'), findsOneWidget);
-    expect(find.text('Recent locations'), findsOneWidget);
-    expect(find.text('No recent locations yet'), findsOneWidget);
-    expect(find.text('Continue'), findsOneWidget);
-    expect(find.byType(BottomNavigationBar), findsNothing);
-    expect(state.bookingStage, BookingStage.locationSelection);
-  });
+      expect(find.byType(PickupTimingSelector), findsOneWidget);
+      expect(find.byType(LocationRouteCard), findsOneWidget);
+      expect(find.byType(SelectOnMapButton), findsOneWidget);
+      expect(find.byType(PlaceCategorySelector), findsOneWidget);
+      expect(find.byType(RecentPlacesContent), findsOneWidget);
+      expect(find.text('Pick up now'), findsOneWidget);
+      expect(find.text('Schedule for later'), findsOneWidget);
+      expect(find.text('Select on map'), findsOneWidget);
+      expect(find.text('Recent places'), findsOneWidget);
+      expect(find.text('Saved places'), findsOneWidget);
+      expect(find.text('Continue'), findsOneWidget);
+      expect(find.byIcon(Icons.arrow_back), findsOneWidget);
+    });
 
-  testWidgets('requires both pickup and drop before continuing', (
-    tester,
-  ) async {
-    final state = AppState();
-    await tester.pumpWidget(app(state));
-    await tester.pumpAndSettle();
+    testWidgets('Pickup timing switching toggles between now and later', (
+      tester,
+    ) async {
+      final state = AppState();
+      await tester.pumpWidget(buildTestApp(state));
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Continue'));
-    await tester.pump();
+      // Tap Schedule for later
+      await tester.tap(find.text('Schedule for later'));
+      await tester.pumpAndSettle();
 
-    expect(find.text('Choose a pickup location.'), findsOneWidget);
-    expect(find.text('Choose a drop location.'), findsOneWidget);
-    expect(state.bookingStage, BookingStage.locationSelection);
-    expect(find.text('Place order'), findsNothing);
-  });
+      // Tap Pick up now
+      await tester.tap(find.text('Pick up now'));
+      await tester.pumpAndSettle();
 
-  testWidgets('recent destination fills the drop field without fake pickup', (
-    tester,
-  ) async {
-    final prefs = await SharedPreferences.getInstance();
-    final store = RecentDestinationsStore(preferences: prefs);
-    await store.record(
-      const SavedLocation(
-        id: 'recent-1',
-        label: 'Jhargram Bazar',
-        subtitle: 'Market area, Jhargram',
-        coordinate: LatLng(22.4701, 86.9152),
-        type: PlaceType.market,
-      ),
-    );
+      expect(find.text('Pick up now'), findsOneWidget);
+    });
 
-    final state = AppState(recentDestinationsStore: store);
-    await tester.pumpWidget(app(state));
-    await tester.pumpAndSettle();
+    testWidgets('Recent / Saved places switching toggles content', (
+      tester,
+    ) async {
+      final state = AppState();
+      await tester.pumpWidget(buildTestApp(state));
+      await tester.pumpAndSettle();
 
-    expect(find.text('Jhargram Bazar'), findsOneWidget);
-    await tester.tap(find.text('Jhargram Bazar'));
-    await tester.pump();
+      // Initially on Recent places
+      expect(find.byType(RecentPlacesContent), findsOneWidget);
+      expect(find.byType(SavedPlacesContent), findsNothing);
 
-    expect(state.destinationLocation?.label, 'Jhargram Bazar');
-    expect(state.pickupLocation, isNull);
-    expect(find.byIcon(Icons.delete), findsNothing);
-  });
+      // Tap Saved places
+      await tester.tap(find.text('Saved places'));
+      await tester.pumpAndSettle();
 
-  testWidgets('search sets a pickup without inventing a drop', (tester) async {
-    final state = AppState();
-    await tester.pumpWidget(app(state));
-    await tester.pumpAndSettle();
+      expect(find.byType(SavedPlacesContent), findsOneWidget);
+      expect(find.byType(RecentPlacesContent), findsNothing);
+      expect(find.text('Home'), findsOneWidget);
+      expect(find.text('Work'), findsOneWidget);
 
-    await tester.tap(find.text('Choose pickup location'));
-    await tester.pumpAndSettle();
+      // Tap back to Recent places
+      await tester.tap(find.text('Recent places'));
+      await tester.pumpAndSettle();
 
-    await tester.enterText(find.byType(TextField).first, 'Railway');
-    await tester.pump(const Duration(milliseconds: 400));
-    await tester.pumpAndSettle();
+      expect(find.byType(RecentPlacesContent), findsOneWidget);
+      expect(find.byType(SavedPlacesContent), findsNothing);
+    });
 
-    await tester.tap(find.text('Jhargram Railway Station').last);
-    await tester.pumpAndSettle();
+    testWidgets('All four primary UI combinations work independently', (
+      tester,
+    ) async {
+      final state = AppState();
+      await tester.pumpWidget(buildTestApp(state));
+      await tester.pumpAndSettle();
 
-    expect(state.pickupLocation?.label, 'Jhargram Railway Station');
-    expect(state.destinationLocation, isNull);
-  });
+      // Combination 1: Pick up now + Recent places
+      expect(find.byType(RecentPlacesContent), findsOneWidget);
 
-  testWidgets('map picker opens for the selected field and resets its stage', (
-    tester,
-  ) async {
-    final state = AppState();
-    await tester.pumpWidget(app(state));
-    await tester.pumpAndSettle();
+      // Combination 2: Pick up now + Saved places
+      await tester.tap(find.text('Saved places'));
+      await tester.pumpAndSettle();
+      expect(find.byType(SavedPlacesContent), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Select pickup on map'));
-    await tester.pumpAndSettle();
+      // Combination 3: Schedule for later + Saved places
+      await tester.tap(find.text('Schedule for later'));
+      await tester.pumpAndSettle();
+      expect(find.byType(SavedPlacesContent), findsOneWidget);
 
-    expect(find.text('Set pickup point'), findsOneWidget);
-    expect(state.bookingStage, BookingStage.locationConfirmation);
+      // Combination 4: Schedule for later + Recent places
+      await tester.tap(find.text('Recent places'));
+      await tester.pumpAndSettle();
+      expect(find.byType(RecentPlacesContent), findsOneWidget);
+    });
 
-    await tester.pageBack();
-    await tester.pumpAndSettle();
+    testWidgets('Empty recent places state displays correctly', (tester) async {
+      final state = AppState();
+      await tester.pumpWidget(buildTestApp(state));
+      await tester.pumpAndSettle();
 
-    expect(state.bookingStage, BookingStage.locationSelection);
-  });
+      expect(find.text('No recent places yet'), findsOneWidget);
+      expect(
+        find.text('Your selected destinations will appear here'),
+        findsOneWidget,
+      );
+      expect(find.byIcon(Icons.history_toggle_off), findsOneWidget);
+    });
 
-  testWidgets('continue loads the two fare options and opens place order', (
-    tester,
-  ) async {
-    final state = AppState();
-    state.setPickupLocation(
-      const SavedLocation(
-        id: 'pickup',
-        label: 'Jhargram Railway Station',
-        coordinate: LatLng(22.4529, 86.9003),
-      ),
-    );
-    state.setDestinationLocation(
-      const SavedLocation(
-        id: 'drop',
-        label: 'Jhargram Bazar',
-        coordinate: LatLng(22.4701, 86.9152),
-      ),
-    );
+    testWidgets('Populated recent places displays list rows', (tester) async {
+      final prefs = await SharedPreferences.getInstance();
+      final store = RecentDestinationsStore(preferences: prefs);
+      await store.record(
+        const SavedLocation(
+          id: 'recent-station',
+          label: 'Jhargram Station',
+          subtitle: 'Station Road SER Zone',
+          coordinate: LatLng(22.4529, 86.9003),
+          type: PlaceType.transport,
+        ),
+      );
 
-    await tester.pumpWidget(app(state));
-    await tester.pumpAndSettle();
+      final state = AppState(recentDestinationsStore: store);
+      await tester.pumpWidget(buildTestApp(state));
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Continue'));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 500));
-    await tester.pumpAndSettle();
+      expect(find.text('Jhargram Station'), findsOneWidget);
+      expect(find.text('Station Road SER Zone'), findsOneWidget);
+      expect(find.text('No recent places yet'), findsNothing);
+    });
 
-    expect(state.bookingStage, BookingStage.vehicleSelection);
-    expect(state.availableVehicles.length, 2);
-    expect(find.text('Place order'), findsOneWidget);
+    testWidgets('Populated saved places displays 3 reference places and add card', (
+      tester,
+    ) async {
+      final state = AppState();
+      await tester.pumpWidget(buildTestApp(state));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Saved places'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Home'), findsOneWidget);
+      expect(find.text('Ward 8, Kadamkanan, Jhargram'), findsOneWidget);
+      expect(find.text('Work'), findsOneWidget);
+      expect(
+        find.text('Jhargram Court Complex, DM Office Rd'),
+        findsOneWidget,
+      );
+      expect(find.text('Jhargram Railway Station'), findsOneWidget);
+      expect(find.text('Station Road, SER Zone'), findsOneWidget);
+      expect(find.text('Add new location'), findsOneWidget);
+    });
+
+    testWidgets('Selecting a saved place sets destination and enables Continue', (
+      tester,
+    ) async {
+      final state = AppState();
+      state.setPickupLocation(
+        const SavedLocation(
+          id: 'pickup-bazar',
+          label: 'Jhargram Bazar',
+          subtitle: 'Main Market Area',
+          coordinate: LatLng(22.4701, 86.9152),
+        ),
+      );
+
+      await tester.pumpWidget(buildTestApp(state));
+      await tester.pumpAndSettle();
+
+      expect(state.destinationLocation, isNull);
+
+      // Switch to Saved places
+      await tester.tap(find.text('Saved places'));
+      await tester.pumpAndSettle();
+
+      // Tap Home
+      await tester.tap(find.text('Home'));
+      await tester.pumpAndSettle();
+
+      expect(state.destinationLocation?.label, 'Home');
+      expect(state.pickupLocation?.label, 'Jhargram Bazar');
+    });
+
+    testWidgets('Selecting a recent place updates destination', (
+      tester,
+    ) async {
+      final prefs = await SharedPreferences.getInstance();
+      final store = RecentDestinationsStore(preferences: prefs);
+      await store.record(
+        const SavedLocation(
+          id: 'recent-palace',
+          label: 'Jhargram Palace',
+          subtitle: 'Palace Road',
+          coordinate: LatLng(22.4480, 86.8950),
+          type: PlaceType.landmark,
+        ),
+      );
+
+      final state = AppState(recentDestinationsStore: store);
+      await tester.pumpWidget(buildTestApp(state));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Jhargram Palace'));
+      await tester.pumpAndSettle();
+
+      expect(state.destinationLocation?.label, 'Jhargram Palace');
+    });
+
+    testWidgets('Adding a saved place adds it to the list', (tester) async {
+      final state = AppState();
+      await tester.pumpWidget(buildTestApp(state));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Saved places'));
+      await tester.pumpAndSettle();
+
+      await tester.drag(find.byType(ListView), const Offset(0, -300));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Add new location'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Name (e.g. Gym, Library, Friend)'), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField).first, 'Gym Club');
+      await tester.enterText(
+        find.byType(TextField).last,
+        'Main Road, Jhargram',
+      );
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Gym Club'), findsOneWidget);
+    });
+
+    testWidgets('Editing a saved place updates it', (tester) async {
+      final state = AppState();
+      await tester.pumpWidget(buildTestApp(state));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Saved places'));
+      await tester.pumpAndSettle();
+
+      // Tap edit icon for Home
+      await tester.tap(find.byTooltip('Edit Home'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Edit Home'), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField).first, 'My Sweet Home');
+      await tester.tap(find.text('Update'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('My Sweet Home'), findsOneWidget);
+    });
+
+    testWidgets('Select on map opens map picker and preserves state', (
+      tester,
+    ) async {
+      final state = AppState();
+      await tester.pumpWidget(buildTestApp(state));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Select on map'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(MapLocationPickerScreen), findsOneWidget);
+      expect(state.bookingStage, BookingStage.locationConfirmation);
+
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+
+      expect(state.bookingStage, BookingStage.locationSelection);
+      expect(find.byType(LocationSelectionScreen), findsOneWidget);
+    });
+
+    testWidgets('Disabled Continue when destination is not chosen', (
+      tester,
+    ) async {
+      final state = AppState();
+      await tester.pumpWidget(buildTestApp(state));
+      await tester.pumpAndSettle();
+
+      // Destination is null, tap Continue
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+
+      // Booking stage remains locationSelection, no navigation
+      expect(state.bookingStage, BookingStage.locationSelection);
+      expect(find.text('Place order screen'), findsNothing);
+    });
+
+    testWidgets('Enabled Continue proceeds to Place Order when route is valid', (
+      tester,
+    ) async {
+      final state = AppState();
+      state.setPickupLocation(
+        const SavedLocation(
+          id: 'pickup-station',
+          label: 'Jhargram Railway Station',
+          subtitle: 'Station Road',
+          coordinate: LatLng(22.4529, 86.9003),
+        ),
+      );
+      state.setDestinationLocation(
+        const SavedLocation(
+          id: 'drop-bazar',
+          label: 'Jhargram Bazar',
+          subtitle: 'Market Area',
+          coordinate: LatLng(22.4701, 86.9152),
+        ),
+      );
+
+      await tester.pumpWidget(buildTestApp(state));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Continue'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
+
+      expect(state.bookingStage, BookingStage.vehicleSelection);
+      expect(find.text('Place order screen'), findsOneWidget);
+    });
+
+    testWidgets('Preserving state when switching selectors', (tester) async {
+      final state = AppState();
+      state.setPickupLocation(
+        const SavedLocation(
+          id: 'pickup',
+          label: 'Jhargram Station',
+          coordinate: LatLng(22.4529, 86.9003),
+        ),
+      );
+      state.setDestinationLocation(
+        const SavedLocation(
+          id: 'drop',
+          label: 'Jhargram Bazar',
+          coordinate: LatLng(22.4701, 86.9152),
+        ),
+      );
+
+      await tester.pumpWidget(buildTestApp(state));
+      await tester.pumpAndSettle();
+
+      // Switch timing
+      await tester.tap(find.text('Schedule for later'));
+      await tester.pumpAndSettle();
+
+      // Check pickup & destination preserved
+      expect(state.pickupLocation?.label, 'Jhargram Station');
+      expect(state.destinationLocation?.label, 'Jhargram Bazar');
+
+      // Switch category
+      await tester.tap(find.text('Saved places'));
+      await tester.pumpAndSettle();
+
+      // Check pickup & destination still preserved
+      expect(state.pickupLocation?.label, 'Jhargram Station');
+      expect(state.destinationLocation?.label, 'Jhargram Bazar');
+    });
+
+    testWidgets('Back button preserves booking flow and returns home', (
+      tester,
+    ) async {
+      final state = AppState();
+      await tester.pumpWidget(buildTestApp(state));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.arrow_back));
+      await tester.pumpAndSettle();
+
+      expect(state.bookingStage, BookingStage.home);
+    });
   });
 }

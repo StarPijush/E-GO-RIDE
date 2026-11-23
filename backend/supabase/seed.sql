@@ -1,0 +1,2 @@
+-- No production or personal data belongs in local seeds.
+-- Add deterministic, non-sensitive fixtures only alongside the tests that need them.

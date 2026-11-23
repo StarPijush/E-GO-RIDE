@@ -1,0 +1,78 @@
+openapi: 3.1.0
+info:
+  title: E-GO API
+  version: 1.0.0
+  description: Stage 0 foundation endpoints only; business endpoints are documented separately as planned contracts.
+  x-e-go-stage: "0"
+  x-e-go-planned-api-groups:
+    - /auth
+    - /profiles
+    - /drivers
+    - /vehicles
+    - /locations
+    - /fares
+    - /bookings
+    - /dispatch
+    - /rides
+    - /ledger
+    - /admin
+servers:
+  - url: http://localhost:8080
+    description: Local development
+paths:
+  /health:
+    get:
+      summary: Liveness check
+      operationId: getHealth
+      x-e-go-status: IMPLEMENTED
+      responses:
+        "200":
+          description: The process is alive.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+  /ready:
+    get:
+      summary: Readiness check
+      operationId: getReadiness
+      x-e-go-status: IMPLEMENTED
+      responses:
+        "200":
+          description: The database connection is available.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Readiness"
+        "503":
+          description: A required dependency is unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Health:
+      type: object
+      required: [status]
+      properties:
+        status:
+          const: ok
+    Readiness:
+      type: object
+      required: [status]
+      properties:
+        status:
+          const: ready
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+            message:
+              type: string

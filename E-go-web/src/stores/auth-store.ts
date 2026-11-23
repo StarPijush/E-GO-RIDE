@@ -38,6 +38,8 @@ export interface AuthState {
   lastError: AppError | null;
   /** Epoch milliseconds until another OTP may be requested. */
   otpCooldownUntil: number | null;
+  /** The mock code to show while there is no SMS gateway (never persisted). */
+  otpPreview: string | null;
 }
 
 /** The actions of the authentication store. */
@@ -75,6 +77,7 @@ const initialState: AuthState = {
   pending: null,
   lastError: null,
   otpCooldownUntil: null,
+  otpPreview: null,
 };
 
 export const useAuthStore = create<AuthStore>()(
@@ -133,6 +136,7 @@ export const useAuthStore = create<AuthStore>()(
           }
           set({
             otpCooldownUntil: Date.now() + result.data.cooldownSeconds * 1000,
+            otpPreview: result.data.devOtp ?? null,
             lastError: null,
           });
           return result;
@@ -200,6 +204,7 @@ export const useAuthStore = create<AuthStore>()(
             session: null,
             onboardingSeen: true,
             otpCooldownUntil: null,
+            otpPreview: null,
             lastError: null,
           });
 
@@ -223,6 +228,7 @@ export const useAuthStore = create<AuthStore>()(
           user: null,
           session: null,
           otpCooldownUntil: null,
+          otpPreview: null,
           lastError: null,
         });
       },

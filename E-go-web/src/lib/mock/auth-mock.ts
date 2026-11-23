@@ -11,8 +11,10 @@
  * mock should pretend to be.
  *
  * The demo account is seeded lazily (on the first call) and only while demo
- * mode is enabled. In demo mode the OTP is the fixed `123456`; otherwise a
- * random code is generated and handed back as `devOtp` so the UI can show it.
+ * mode is enabled. Codes are always random. Outside demo mode the generated
+ * code is returned as `devOtp` so the UI can show it in place of an SMS; in
+ * demo mode the fixed code is verified against its PBKDF2 verifier and shown
+ * by the server-provided hint instead.
  */
 
 import {
@@ -25,8 +27,8 @@ import { authErrorMessages } from '@/lib/domain/labels';
 import { emailSchema } from '@/lib/domain/schemas';
 import type { AppErrorCode, AuthSession, Result, User } from '@/lib/domain/types';
 import {
-  DEMO_OTP,
-  DEMO_PASSWORD,
+  DEMO_OTP_VERIFIER,
+  DEMO_PASSWORD_VERIFIER,
   isDemoMode,
 } from '@/lib/mock/demo-credentials';
 import { loadDb, saveDb, type MockAccount } from '@/lib/mock/db';
@@ -199,20 +201,17 @@ export class MockAuthRepository implements AuthRepository {
     let changed = ensureDemoSeedData(db);
 
     if (!db.accounts.some((account) => account.phone === DEMO_NORMALIZED_PHONE)) {
-      const credentials = await hashPassword(DEMO_PASSWORD);
-      if (credentials) {
-        const createdAt = new Date(this.clock()).toISOString();
-        db.users.push({ ...DEMO_USER, createdAt });
-        db.accounts.push({
-          userId: DEMO_USER.id,
-          phone: DEMO_NORMALIZED_PHONE,
-          passwordSalt: credentials.salt,
-          passwordHash: credentials.hash,
-          profileComplete: true,
-          createdAt,
-        });
-        changed = true;
-      }
+      const createdAt = new Date(this.clock()).toISOString();
+      db.users.push({ ...DEMO_USER, createdAt });
+      db.accounts.push({
+        userId: DEMO_USER.id,
+        phone: DEMO_NORMALIZED_PHONE,
+        passwordSalt: DEMO_PASSWORD_VERIFIER.salt,
+        passwordHash: DEMO_PASSWORD_VERIFIER.hash,
+        profileComplete: true,
+        createdAt,
+      });
+      changed = true;
     }
 
     if (changed) saveDb(db);
@@ -273,7 +272,7 @@ export class MockAuthRepository implements AuthRepository {
       }
     }
 
-    const code = isDemoMode() ? DEMO_OTP : generateOtpCode();
+    const code = generateOtpCode();
     this.otpStore.set(normalized, {
       code,
       expiresAt: now + OTP_EXPIRY_MINUTES * 60 * 1000,
@@ -281,7 +280,12 @@ export class MockAuthRepository implements AuthRepository {
       requestedAt: now,
     });
 
-    return { ok: true, data: { cooldownSeconds: OTP_COOLDOWN_SECONDS, devOtp: code } };
+    // Demo mode has no `devOtp`: the UI receives the fixed demo code as a
+    // server prop instead.
+    return {
+      ok: true,
+      data: { cooldownSeconds: OTP_COOLDOWN_SECONDS, devOtp: isDemoMode() ? undefined : code },
+    };
   }
 
   async verifyOtp(phone: string, code: string): Promise<Result<OtpVerifyResult>> {
@@ -293,11 +297,14 @@ export class MockAuthRepository implements AuthRepository {
 
     const entry = this.otpStore.get(normalized);
     const trimmed = code.trim();
+    const demoCode =
+      isDemoMode() &&
+      (await verifyPassword(trimmed, DEMO_OTP_VERIFIER.salt, DEMO_OTP_VERIFIER.hash));
 
     if (!entry) {
       // Demo recovery: a page refresh wipes the in-memory OTP store, so the
       // fixed demo code still works for an existing account.
-      if (isDemoMode() && safeEqual(trimmed, DEMO_OTP)) {
+      if (demoCode) {
         const account = this.findAccount(normalized);
         if (account) return this.completeOtpVerification(account);
       }
@@ -311,6 +318,14 @@ export class MockAuthRepository implements AuthRepository {
     if (entry.attempts >= MAX_OTP_ATTEMPTS) {
       this.otpStore.delete(normalized);
       return failure('invalid_otp', AUTH_ERROR_MESSAGES.invalidOtp, 'otp');
+    }
+    // The issued demo code is random and never returned to the UI, so accept
+    // the fixed demo code whenever it matches its verifier.
+    if (demoCode) {
+      this.otpStore.delete(normalized);
+      const account = this.findAccount(normalized);
+      if (!account) return failure('not_found', AUTH_ERROR_MESSAGES.accountNotFound, 'phone');
+      return this.completeOtpVerification(account);
     }
     if (!safeEqual(entry.code, trimmed)) {
       entry.attempts += 1;

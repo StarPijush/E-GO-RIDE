@@ -24,6 +24,9 @@ import 'package:e_go/features/location/data/current_location_service.dart';
 import 'package:e_go/features/location/data/recent_destinations_store.dart';
 import 'package:e_go/features/location/domain/location_model.dart';
 import 'package:e_go/features/notifications/data/notification_repository.dart';
+import 'package:e_go/features/routing/domain/models/route_result.dart';
+import 'package:e_go/features/routing/domain/services/route_service.dart';
+import 'package:e_go/features/routing/data/services/caching_route_service.dart';
 
 class AppState extends ChangeNotifier {
   AppState({
@@ -33,6 +36,7 @@ class AppState extends ChangeNotifier {
     MockBookingRepository? bookingRepository,
     CurrentLocationService? currentLocationService,
     RecentDestinationsStore? recentDestinationsStore,
+    RouteService? routeService,
     this.driverSearchDelay = const Duration(seconds: 4),
   }) : _customerRepo = authRepository ?? createAuthRepository(),
        _vehicleRepo = vehicleRepository ?? MockVehicleRepository(),
@@ -41,7 +45,8 @@ class AppState extends ChangeNotifier {
        _currentLocationService =
            currentLocationService ?? const UnavailableCurrentLocationService(),
        _recentDestinationsStore =
-           recentDestinationsStore ?? RecentDestinationsStore() {
+           recentDestinationsStore ?? RecentDestinationsStore(),
+       _routeService = routeService ?? CompositeRouteService() {
     _init();
   }
 
@@ -52,6 +57,7 @@ class AppState extends ChangeNotifier {
   final MockBookingRepository _bookingRepo;
   final CurrentLocationService _currentLocationService;
   final RecentDestinationsStore _recentDestinationsStore;
+  final RouteService _routeService;
   final MockNotificationRepository _notificationRepo =
       MockNotificationRepository();
 
@@ -97,7 +103,12 @@ class AppState extends ChangeNotifier {
   int _vehicleRequestId = 0;
   int _searchGeneration = 0;
   int _locationRequestId = 0;
+  int _routeCalculationId = 0;
   Future<void>? _activeSearch;
+
+  RouteResult? _currentRoute;
+  bool _isRouteLoading = false;
+  String? _routeError;
 
   CurrentLocationState _currentLocation = const CurrentLocationState();
   int _recentDestinationsVersion = 0;
@@ -124,6 +135,9 @@ class AppState extends ChangeNotifier {
   FareBreakdown? get calculatedFare => _fareState == FareCalculationState.ready
       ? _selectedVehicle?.fareBreakdown
       : null;
+  RouteResult? get currentRoute => _currentRoute;
+  bool get isRouteLoading => _isRouteLoading;
+  String? get routeError => _routeError;
   bool get hasConfirmedRoute =>
       _pickupLocation != null &&
       _destinationLocation != null &&
@@ -448,6 +462,9 @@ class AppState extends ChangeNotifier {
   void _invalidateDerivedFare() {
     _routeSignature++;
     _vehicleRequestId++;
+    _routeCalculationId++;
+    _currentRoute = null;
+    _routeError = null;
     _availableVehicles = [];
     _selectedVehicle = null;
     _fareState = FareCalculationState.idle;
@@ -477,12 +494,48 @@ class AppState extends ChangeNotifier {
     return null;
   }
 
+  /// Calculates a real road-network route between the confirmed pickup and drop.
+  Future<RouteResult?> calculateRoute({bool force = false}) async {
+    if (!hasConfirmedRoute) return null;
+    final pickup = _pickupLocation!.coordinate;
+    final destination = _destinationLocation!.coordinate;
+
+    final calculationId = ++_routeCalculationId;
+    _isRouteLoading = true;
+    _routeError = null;
+    notifyListeners();
+
+    try {
+      final result = await _routeService.calculateRoute(
+        pickup: pickup,
+        destination: destination,
+        vehicleType: _selectedVehicle?.type ?? _preferredVehicleType,
+      );
+      if (calculationId != _routeCalculationId) return null;
+      _currentRoute = result;
+      _routeError = result.isSuccess ? null : result.errorMessage;
+      return result;
+    } catch (_) {
+      if (calculationId != _routeCalculationId) return null;
+      _routeError = 'Route calculation failed. Please retry.';
+      return null;
+    } finally {
+      if (calculationId == _routeCalculationId) {
+        _isRouteLoading = false;
+        notifyListeners();
+      }
+    }
+  }
+
   /// Loads vehicle options and fare estimates for the confirmed route.
   ///
   /// Returns true only when options are available for the same route that was
   /// requested. Any location change while loading discards the result.
   Future<bool> prepareVehicleSelection() async {
     if (!hasConfirmedRoute) return false;
+
+    // Trigger road route calculation alongside vehicle selection
+    unawaited(calculateRoute());
 
     final pickup = _pickupLocation!;
     final destination = _destinationLocation!;
@@ -851,6 +904,9 @@ class AppState extends ChangeNotifier {
     _fareError = null;
     _submissionState = OrderSubmissionState.idle;
     _createdOrderId = null;
+    _currentRoute = null;
+    _routeError = null;
+    _routeCalculationId++;
     _routeSignature++;
     _vehicleRequestId++;
   }

@@ -8,11 +8,9 @@
  */
 
 import { simulationSeed } from '@/lib/config/env';
-import { isDemoAuthEnabled } from '@/lib/config/env';
 import { stableHash } from '@/lib/domain/ride-orchestrator';
 import type { Driver } from '@/lib/domain/types';
 import { createMockAuthRepository } from '@/lib/mock/auth-mock';
-import { DEMO_OTP, DEMO_PASSWORD, DEMO_PHONE } from '@/lib/mock/demo-credentials';
 import { createMockNotificationRepository } from '@/lib/mock/notification-mock';
 import { createMockPaymentRepository } from '@/lib/mock/payment-mock';
 import { createMockPlacesRepository } from '@/lib/mock/places-mock';
@@ -96,29 +94,6 @@ export function getRideSimulationOptions(): RideSimulationOptions {
     seed,
     shouldFail: (rideId: string) => shouldSimulatedSearchFail(rideId, rate, seedText),
   };
-}
-
-/**
- * The demo credentials of the demo account.
- *
- * `null` outside of demo mode, so the login screen never shows them in a
- * production build. The UI reads them from here and never imports
- * `lib/mock/*` itself.
- */
-export function getDemoCredentials(): { phone: string; password: string } | null {
-  if (!isDemoAuthEnabled) return null;
-  return { phone: DEMO_PHONE, password: DEMO_PASSWORD };
-}
-
-/**
- * The demo OTP of the demo account.
- *
- * `null` outside of demo mode, so the code is never part of a production
- * bundle.
- */
-export function getDemoOtp(): string | null {
-  if (!isDemoAuthEnabled) return null;
-  return DEMO_OTP;
 }
 
 /**

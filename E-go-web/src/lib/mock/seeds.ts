@@ -264,7 +264,7 @@ export const DEMO_NOTIFICATIONS: readonly StoredNotification[] = [
     id: 'notif-demo-001',
     kind: 'ride',
     title: 'Driver assigned',
-    body: 'Suresh Das is on the way to your pickup point.',
+    body: 'Madan Mahato is on the way to your pickup point.',
     createdAt: '2026-11-12T07:46:30.000Z',
     read: false,
     userId: DEMO_USER_ID,

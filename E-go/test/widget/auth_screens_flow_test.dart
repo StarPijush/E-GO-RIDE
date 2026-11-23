@@ -83,6 +83,9 @@ Future<void> _fillRegistration(
     await tester.enterText(_fieldIn('register_email_field'), email);
   }
   await tester.pump();
+  // Accept terms consent checkbox
+  await tester.tap(find.byKey(const Key('terms_consent_row')));
+  await tester.pump();
 }
 
 void main() {

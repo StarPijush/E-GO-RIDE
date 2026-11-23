@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { OtpForm } from "@/components/auth/otp-form";
+import { getDemoOtp } from "@/lib/config/demo-server";
 import { ROUTE_METADATA, ROUTES } from "@/lib/config/routes";
 import { normalizePhoneDigits } from "@/lib/utils/phone";
 import { sanitizeReturnTo } from "@/lib/utils/return-to";
@@ -37,5 +38,7 @@ export default async function OtpPage({
   const sent = first(params.sent) === "1";
   const returnTo = sanitizeReturnTo(first(params.returnTo));
 
-  return <OtpForm phone={digits} mode={mode} sent={sent} returnTo={returnTo} />;
+  return (
+    <OtpForm phone={digits} mode={mode} sent={sent} returnTo={returnTo} demoOtp={getDemoOtp()} />
+  );
 }

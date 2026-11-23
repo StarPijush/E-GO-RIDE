@@ -106,12 +106,14 @@ class FareSummaryPanel extends StatelessWidget {
                 ],
               ),
             ),
-            Text(
-              'Approx. straight-line\ndistance '
-              '${fare!.distanceKm.toStringAsFixed(1)} km',
-              textAlign: TextAlign.right,
-              style: EGoTypography.bodySmall.copyWith(
-                color: EGoColors.onSurfaceMuted,
+            Flexible(
+              child: Text(
+                'Approx. distance\n'
+                '${fare!.distanceKm.toStringAsFixed(1)} km',
+                textAlign: TextAlign.right,
+                style: EGoTypography.bodySmall.copyWith(
+                  color: EGoColors.onSurfaceMuted,
+                ),
               ),
             ),
           ],

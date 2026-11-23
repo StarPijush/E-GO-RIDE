@@ -122,7 +122,7 @@ describe("registration and OTP", () => {
     expect(requested.ok).toBe(true);
     if (requested.ok) {
       expect(requested.data.cooldownSeconds).toBe(30);
-      expect(requested.data.devOtp).toBe("123456");
+      expect(requested.data.devOtp).toBeUndefined();
     }
 
     const verified = await repository.verifyOtp("9876543210", "123456");

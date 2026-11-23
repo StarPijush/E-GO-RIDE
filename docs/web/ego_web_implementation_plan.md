@@ -17,7 +17,7 @@ Build `D:\E-RICKSHAW RIDE\E-go-web`, a separate Next.js 16 / React 19 / TypeScri
 | A3 | `/help-support`, `/about` and `/safety` live inside the protected app shell (consistent web UX). `/register` redirects to `/create-account`. |
 | A4 | Demo auth is enabled only when `NEXT_PUBLIC_ENABLE_DEMO_AUTH=true` **and** `NODE_ENV !== 'production'`. Credentials documented in README/.env.example. Production build must not contain `EgoDemo@123` or mock OTP. |
 | A5 | Registration: name + phone + optional email + password. Account is created then OTP-verified. New users then complete `/profile-setup`; demo user goes straight to `/home`. |
-| A6 | Registered accounts may sign in with their password. The mock DB stores a salted SHA-256 hash (Web Crypto) only — never plaintext. Demo account is seeded with the approved demo password. OTP remains `123456` in demo mode with 30 s cooldown. |
+| A6 | Registered accounts may sign in with their password. The mock DB stores a salted PBKDF2-SHA-256 hash (Web Crypto) only — never plaintext. Demo account is seeded with the approved password verifier. OTP remains the approved demo code in demo mode with 30 s cooldown; only its verifier ships in the client. |
 | A7 | Demo account is seeded with 3 historical rides (2 completed incl. 1 unrated, 1 cancelled) so My Rides and Ride Details are demonstrable. New registrations start with no history. |
 | A8 | Lifecycle timings: searching 6 s → assigned 4 s → arriving 12 s → arrived (manual "Start trip", auto 30 s) → in progress 15 s → completed 0.5 s → awaiting rating. Cancellation 0.3 s. Constants in `lib/config/constants.ts`, deadline-based (`nextTransitionAt`), refresh-recoverable. |
 | A9 | Payments: Cash is the default and only selectable method for booking; UPI/other methods are visible as "coming soon" in Payment Methods, matching Flutter's FAQ. Never collect card data. |
@@ -65,3 +65,12 @@ Alias: `/register` → `/create-account`.
 - `docs/web/ego_web_audit_report.md` (Auditor)
 - `docs/web/ego_web_final_report.md` (Orchestrator)
 - `E-go-web/README.md` (setup, commands, env, demo credentials, mock behavior, architecture)
+
+## 7. Delivery status (2026-11-20)
+
+Batches 0–7 are delivered. Final `npm run verify` passes: lint, typecheck,
+32 test files / 268 tests, production build (34 generated pages / 31 app
+routes), and the demo-secret build check. The seeded demo login remains
+development-only; the independent Auditor sign-off is outstanding because the
+Auditor model was unavailable. See `ego_web_audit_report.md` for findings and
+residual limitations.

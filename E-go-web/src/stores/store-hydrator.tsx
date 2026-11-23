@@ -19,38 +19,50 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useBookingStore } from '@/stores/booking-store';
 import { usePreferencesStore } from '@/stores/preferences-store';
 
-/** The hydration runs once per page (React 19 may mount an effect twice). */
-let hydratedOnce = false;
+/**
+ * The hydration runs once per page.
+ *
+ * React StrictMode mounts the effect twice in development. Both runs await
+ * the same promise, and the flags are only set after it settles - a second
+ * mount can never mark the stores hydrated before the first read finishes.
+ */
+let hydrationPromise: Promise<void> | null = null;
+
+function hydrateStores(): Promise<void> {
+  if (!hydrationPromise) {
+    hydrationPromise = (async () => {
+      await Promise.all([
+        useAuthStore.persist.rehydrate(),
+        useBookingStore.persist.rehydrate(),
+        usePreferencesStore.persist.rehydrate(),
+      ]);
+
+      initializeMockData();
+
+      await useAuthStore.getState().expireIfNeeded();
+      await useBookingStore.getState().resume();
+    })().catch((error: unknown) => {
+      hydrationPromise = null;
+      throw error;
+    });
+  }
+
+  return hydrationPromise;
+}
 
 export function StoreHydrator() {
   useEffect(() => {
-    let cancelled = false;
+    let active = true;
 
-    const hydrate = async () => {
-      try {
-        if (!hydratedOnce) {
-          hydratedOnce = true;
+    const finish = () => {
+      if (!active) return;
 
-          await Promise.all([
-            useAuthStore.persist.rehydrate(),
-            useBookingStore.persist.rehydrate(),
-            usePreferencesStore.persist.rehydrate(),
-          ]);
-
-          initializeMockData();
-
-          await useAuthStore.getState().expireIfNeeded();
-          await useBookingStore.getState().resume();
-        }
-      } finally {
-        if (cancelled) return;
-        useAuthStore.getState().setHasHydrated(true);
-        useBookingStore.getState().setHasHydrated(true);
-        usePreferencesStore.getState().setHasHydrated(true);
-      }
+      useAuthStore.getState().setHasHydrated(true);
+      useBookingStore.getState().setHasHydrated(true);
+      usePreferencesStore.getState().setHasHydrated(true);
     };
 
-    void hydrate();
+    void hydrateStores().then(finish, finish);
 
     // Another tab changed the session or the booking.
     const handleStorage = (event: StorageEvent) => {
@@ -72,7 +84,7 @@ export function StoreHydrator() {
     window.addEventListener('storage', handleStorage);
 
     return () => {
-      cancelled = true;
+      active = false;
       window.removeEventListener('storage', handleStorage);
     };
   }, []);

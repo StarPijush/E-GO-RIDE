@@ -47,8 +47,8 @@ export interface OtpRequestResult {
   /** Seconds the user has to wait before another code may be requested. */
   cooldownSeconds: number;
   /**
-   * The generated code. Only returned by the mock adapters so the demo UI can
-   * show it - a real API never returns the code it sent.
+   * The generated code. Only returned by the mock adapters so the UI can show
+   * it in place of an SMS - a real API never returns the code it sent.
    */
   devOtp?: string;
 }

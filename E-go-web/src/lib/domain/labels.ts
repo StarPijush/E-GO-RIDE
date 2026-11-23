@@ -292,7 +292,8 @@ export const authCopy = {
     cooldown: 'Resend OTP in {seconds}s',
     verify: 'Verify',
     cta: 'Verify',
-    demoHint: 'Demo OTP: 123456',
+    demoHint: 'Demo OTP:',
+    mockHint: 'Mock OTP (not sent by SMS):',
   },
   profileSetup: {
     title: 'Set up your profile',

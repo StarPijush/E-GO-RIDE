@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 
 /// CustomPainter that renders the reference map aesthetics for Jhargram.

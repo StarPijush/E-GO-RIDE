@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
-
-import 'package:e_go/app/theme/index.dart';
 import 'package:e_go/core/mock_pricing.dart';
 import 'package:e_go/features/booking/data/vehicle_repository.dart';
+import 'vehicle_icon_widgets.dart';
 
-/// One of the two booking options: E-Rickshaw or Bike.
+/// Simplified, premium vehicle card combining Rapido and Jugnoo patterns.
+///
+/// Features:
+/// - LEFT: Clean vector vehicle artwork + Vehicle name (+ optional badge)
+/// - MIDDLE: Short ride description + arrival estimate & passenger capacity
+/// - RIGHT: Exactly ONE prominent fare + small information icon (i)
+/// - NO duplicate prices or confusing crossed-out figures
+/// - Selected state: Crisp Deep Navy outline with subtle elevation
+/// - Unselected state: Clean white background with neutral border
 class VehicleOptionCard extends StatelessWidget {
   const VehicleOptionCard({
     super.key,
@@ -12,137 +19,241 @@ class VehicleOptionCard extends StatelessWidget {
     required this.isSelected,
     required this.fareReady,
     required this.onTap,
+    this.onInfoTap,
   });
 
   final VehicleOption vehicle;
   final bool isSelected;
   final bool fareReady;
   final VoidCallback onTap;
+  final VoidCallback? onInfoTap;
 
-  String get _displayName =>
-      vehicle.type == VehicleType.toto ? 'E-Rickshaw' : 'Bike';
+  bool get _isToto => vehicle.type == VehicleType.toto;
 
-  String get _displaySubtitle => vehicle.type == VehicleType.toto
-      ? 'Electric · up to 3 passengers'
-      : 'Fast · 1 passenger';
+  String get _displayName => _isToto ? 'E-Rickshaw' : 'Bike';
 
-  IconData get _icon => vehicle.type == VehicleType.toto
-      ? Icons.electric_rickshaw
-      : Icons.two_wheeler;
+  int get _capacity => _isToto ? 3 : 1;
+
+  String get _description =>
+      _isToto ? 'Personal E-Rickshaw' : 'Quick Bike rides';
+
+  String get _etaText => _isToto ? '4 mins away' : '2 mins away';
+
+  String get _capacityText =>
+      _capacity == 1 ? '1 passenger' : '$_capacity passengers';
 
   @override
   Widget build(BuildContext context) {
     final fare = vehicle.fareBreakdown;
+    final fareText = fareReady ? fare.totalFare.toStringAsFixed(0) : '--';
 
     return Semantics(
       button: true,
       selected: isSelected,
       label:
-          '$_displayName. $_displaySubtitle. '
-          '${fareReady ? 'Fare ${fare.totalFare.toStringAsFixed(0)} rupees' : 'Fare not calculated'}',
+          '$_displayName, $_capacityText, $_etaText, ₹$fareText, $_description',
       child: Material(
-        color: EGoColors.surface,
-        borderRadius: BorderRadius.circular(EGoSpacing.radiusXLarge),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(EGoSpacing.radiusXLarge),
+          borderRadius: BorderRadius.circular(16),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 180),
-            padding: const EdgeInsets.all(EGoSpacing.lg),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
             decoration: BoxDecoration(
-              color: isSelected
-                  ? EGoColors.brandYellowMuted
-                  : EGoColors.surface,
-              borderRadius: BorderRadius.circular(EGoSpacing.radiusXLarge),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isSelected
-                    ? EGoColors.brandPrimary
-                    : EGoColors.outlineVariant,
-                width: isSelected ? 2 : 1,
+                    ? const Color(0xFF142B45) // Deep Navy selected outline
+                    : const Color(0xFFE2E8F0), // Subtle neutral border
+                width: isSelected ? 1.8 : 1.0,
               ),
+              boxShadow: [
+                if (isSelected)
+                  BoxShadow(
+                    color: const Color(0xFF142B45).withValues(alpha: 0.08),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  )
+                else
+                  BoxShadow(
+                    color: const Color(0xFF142B45).withValues(alpha: 0.02),
+                    blurRadius: 4,
+                    offset: const Offset(0, 1),
+                  ),
+              ],
             ),
             child: Row(
               children: [
+                // 1. Vehicle Artwork Container (52x46)
                 Container(
-                  width: 56,
-                  height: 56,
+                  width: 52,
+                  height: 46,
+                  padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? EGoColors.brandPrimaryLight
-                        : EGoColors.surfaceVariant,
-                    borderRadius: BorderRadius.circular(EGoSpacing.radiusLarge),
+                    color: _isToto
+                        ? const Color(0xFFFFF9E6)
+                        : const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: _isToto
+                          ? const Color(0xFFFFC928).withValues(alpha: 0.35)
+                          : const Color(0xFFE2E8F0),
+                    ),
                   ),
-                  child: Icon(_icon, size: 30, color: EGoColors.brandNavy),
+                  child: Center(
+                    child: _isToto
+                        ? const TotoIconWidget(size: 38)
+                        : const BikeIconWidget(size: 38),
+                  ),
                 ),
-                const SizedBox(width: EGoSpacing.lg),
+                const SizedBox(width: 10),
+
+                // 2. Center Content: Name, Badge, Description, ETA & Capacity
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      // Row A: Title + FASTEST Badge (for Bike) + Checkmark
                       Row(
                         children: [
                           Flexible(
                             child: Text(
                               _displayName,
-                              style: EGoTypography.titleMedium.copyWith(
-                                fontWeight: FontWeight.w600,
+                              style: const TextStyle(
+                                fontFamily: 'Manrope',
+                                fontSize: 15.5,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF142B45),
+                                height: 1.1,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
+                          if (!_isToto) ...[
+                            const SizedBox(width: 5),
+                            // FASTEST Pill Badge
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4.5,
+                                vertical: 1.5,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE6F7F0), // Mint background
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: const Text(
+                                'FASTEST',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 9.5,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.3,
+                                  color: Color(0xFF0D8364), // Dark mint/green
+                                  height: 1.0,
+                                ),
+                              ),
+                            ),
+                          ],
                           if (isSelected) ...[
-                            const SizedBox(width: EGoSpacing.sm),
+                            const SizedBox(width: 4),
                             const Icon(
                               Icons.check_circle,
-                              color: EGoColors.brandNavy,
-                              size: EGoSpacing.iconSmall,
+                              size: 15,
+                              color: Color(0xFF142B45),
                             ),
                           ],
                         ],
                       ),
-                      const SizedBox(height: 2),
+                      const SizedBox(height: 3),
+
+                      // Row B: Supporting Description
                       Text(
-                        _displaySubtitle,
-                        style: EGoTypography.bodySmall.copyWith(
-                          color: EGoColors.onSurfaceMuted,
+                        _description,
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF64748B),
+                          height: 1.1,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      if (fareReady) ...[
-                        const SizedBox(height: EGoSpacing.xs),
-                        Text(
-                          '${fare.estimatedArrivalMinutes} min away · '
-                          '${fare.estimatedMinutes} min trip',
-                          style: EGoTypography.labelSmall.copyWith(
-                            color: EGoColors.onSurfaceMuted,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      const SizedBox(height: 3),
+
+                      // Row C: Arrival Estimate & Capacity
+                      Text(
+                        '$_etaText · $_capacityText',
+                        style: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF64748B),
                         ),
-                      ],
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                   ),
                 ),
-                const SizedBox(width: EGoSpacing.md),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                const SizedBox(width: 6),
+
+                // 3. Trailing: Single Prominent Fare + Information Button (i)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      fareReady ? '₹${fare.totalFare.toStringAsFixed(0)}' : '—',
-                      style: EGoTypography.titleMedium.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: EGoColors.onSurface,
-                      ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        const Text(
+                          '₹',
+                          style: TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF142B45),
+                          ),
+                        ),
+                        const SizedBox(width: 1),
+                        Text(
+                          fareText,
+                          style: const TextStyle(
+                            fontFamily: 'Manrope',
+                            fontSize: 22,
+                            fontWeight: FontWeight.w900,
+                            color: Color(0xFF142B45),
+                            height: 1.0,
+                          ),
+                        ),
+                      ],
                     ),
-                    if (fareReady)
-                      Text(
-                        '${fare.distanceKm.toStringAsFixed(1)} km',
-                        style: EGoTypography.labelSmall.copyWith(
-                          color: EGoColors.onSurfaceMuted,
+                    const SizedBox(width: 2),
+
+                    // Information Button (Jugnoo / Rapido pattern)
+                    Material(
+                      color: Colors.transparent,
+                      shape: const CircleBorder(),
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: onInfoTap,
+                        child: const Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Icon(
+                            Icons.info_outline,
+                            size: 17,
+                            color: Color(0xFF94A3B8),
+                          ),
                         ),
                       ),
+                    ),
                   ],
                 ),
               ],

@@ -49,6 +49,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final FocusNode _emailFocusNode = FocusNode();
 
   bool _isLoading = false;
+  bool _termsAccepted = false;
   String? _generalError;
   String? _nameError;
   String? _phoneError;
@@ -110,6 +111,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       _isPhoneValid &&
       _isPasswordValid &&
       _isEmailValid &&
+      _termsAccepted &&
       !_isLoading;
 
   Future<void> _handleSubmit() async {
@@ -316,7 +318,12 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                             ),
                           ],
 
-                          const SizedBox(height: 24.0),
+                          const SizedBox(height: 20.0),
+
+                          // Terms & Privacy Consent Checkbox
+                          _buildTermsConsent(),
+
+                          const SizedBox(height: 20.0),
 
                           // Primary CTA Button
                           _buildSubmitButton(),
@@ -508,30 +515,105 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
             ),
           ),
         ),
-
-        const SizedBox(height: 16.0),
-
-        // Legal footnote with subtle top divider
-        Container(
-          padding: const EdgeInsets.only(top: 12.0),
-          decoration: const BoxDecoration(
-            border: Border(
-              top: BorderSide(color: EGoColors.divider, width: 1.0),
-            ),
-          ),
-          child: const Text(
-            'By continuing, you agree to our Terms of Service & Privacy Policy',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: EGoTypography.fontFamilyBody,
-              fontSize: 12.0,
-              height: 18.0 / 12.0,
-              fontWeight: FontWeight.w400,
-              color: EGoColors.onSurfaceMuted,
-            ),
-          ),
-        ),
       ],
+    );
+  }
+
+  Widget _buildTermsConsent() {
+    const fontFamily = EGoTypography.fontFamilyBody;
+
+    return GestureDetector(
+      key: const Key('terms_consent_row'),
+      onTap: () {
+        setState(() {
+          _termsAccepted = !_termsAccepted;
+        });
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Custom Checkbox
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            width: 20.0,
+            height: 20.0,
+            margin: const EdgeInsets.only(top: 1.0),
+            decoration: BoxDecoration(
+              color: _termsAccepted
+                  ? EGoColors.brandPrimary
+                  : EGoColors.surface,
+              borderRadius: BorderRadius.circular(6.0),
+              border: Border.all(
+                color: _termsAccepted
+                    ? EGoColors.brandPrimary
+                    : EGoColors.outlineVariant,
+                width: 1.5,
+              ),
+              boxShadow: const [
+                BoxShadow(
+                  color: EGoColors.shadow,
+                  blurRadius: 2,
+                  offset: Offset(0, 1),
+                ),
+              ],
+            ),
+            child: _termsAccepted
+                ? const Icon(
+                    Icons.check_rounded,
+                    size: 14.0,
+                    color: EGoColors.onSurface,
+                  )
+                : null,
+          ),
+
+          const SizedBox(width: 10.0),
+
+          // Label Text with inline links
+          Expanded(
+            child: Text.rich(
+              TextSpan(
+                text: 'I agree to the ',
+                style: const TextStyle(
+                  fontFamily: fontFamily,
+                  fontSize: 13.0,
+                  fontWeight: FontWeight.w400,
+                  height: 1.4,
+                  color: EGoColors.onSurfaceVariant,
+                ),
+                children: [
+                  TextSpan(
+                    text: 'Terms of Service',
+                    style: const TextStyle(
+                      fontFamily: fontFamily,
+                      fontSize: 13.0,
+                      fontWeight: FontWeight.w600,
+                      color: EGoColors.onSurface,
+                      decoration: TextDecoration.underline,
+                      decorationColor: EGoColors.brandPrimary,
+                      decorationThickness: 2.0,
+                    ),
+                  ),
+                  const TextSpan(text: ' and '),
+                  TextSpan(
+                    text: 'Privacy Policy',
+                    style: const TextStyle(
+                      fontFamily: fontFamily,
+                      fontSize: 13.0,
+                      fontWeight: FontWeight.w600,
+                      color: EGoColors.onSurface,
+                      decoration: TextDecoration.underline,
+                      decorationColor: EGoColors.brandPrimary,
+                      decorationThickness: 2.0,
+                    ),
+                  ),
+                  const TextSpan(text: '.'),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

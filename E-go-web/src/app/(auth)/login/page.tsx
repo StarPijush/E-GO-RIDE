@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { LoginForm } from "@/components/auth/login-form";
+import { getDemoLogin } from "@/lib/config/demo-server";
 import { ROUTE_METADATA } from "@/lib/config/routes";
 import { sanitizeReturnTo } from "@/lib/utils/return-to";
 
@@ -19,5 +20,5 @@ export default async function LoginPage({
   const params = await searchParams;
   const raw = Array.isArray(params.returnTo) ? params.returnTo[0] : params.returnTo;
 
-  return <LoginForm returnTo={sanitizeReturnTo(raw)} />;
+  return <LoginForm returnTo={sanitizeReturnTo(raw)} demo={getDemoLogin()} />;
 }

@@ -14,8 +14,6 @@ import 'package:e_go/app/app_state.dart';
 import 'package:e_go/app/theme/index.dart';
 import 'package:e_go/features/location/data/current_location_service.dart';
 import 'package:e_go/features/location/data/recent_destinations_store.dart';
-import 'package:e_go/features/location/domain/location_model.dart';
-import 'package:e_go/mock_data/mock_data.dart';
 import 'package:e_go/shared/shell/ego_main_shell.dart';
 
 import '../helpers/test_tile_provider.dart';

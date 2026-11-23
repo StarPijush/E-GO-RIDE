@@ -520,10 +520,13 @@ Environment (`lib/config/env.ts`, parsed with Zod, all public):
 | `NEXT_PUBLIC_MAP_TILE_URL` | OSM template | Tile provider override. |
 | `NEXT_PUBLIC_DISABLE_MAP` | `false` | Fallback-only mode for CI/e2e. |
 | `NEXT_PUBLIC_SIM_SEED` | empty | Deterministic simulation. |
+| `DEMO_LOGIN_PHONE` | empty | Server-only demo phone; login page prop. |
+| `DEMO_LOGIN_PASSWORD` | empty | Server-only demo password; login page prop. |
+| `DEMO_LOGIN_OTP` | empty | Server-only demo OTP; OTP page prop. |
 
-- `isDemoAuthEnabled = env.NEXT_PUBLIC_ENABLE_DEMO_AUTH === 'true' && process.env.NODE_ENV !== 'production'` (the second condition is compiled out in prod). Demo credentials and OTP `123456` live in `lib/mock/demo-credentials.ts`, imported lazily inside the mock auth repository; login screen checks `isDemoAuthEnabled` before showing the credentials card. Batch 7 adds a build check: `grep` the `.next/static` output for `EgoDemo@123` and fail if found with demo disabled.
-- No secrets. No `NEXT_PUBLIC_*` value may ever be treated as private. `.env.example` documents each variable; `.env.local` is gitignored.
-- Registered mock accounts are OTP-only: the password is validated (>= 8) and discarded, never stored. Password login is demo-account-only, stated in UI copy.
+- `isDemoAuthEnabled = env.NEXT_PUBLIC_ENABLE_DEMO_AUTH === 'true' && process.env.NODE_ENV !== 'production'` (the second condition is compiled out in prod). The plaintext demo login/OTP are read at runtime from server-only `DEMO_LOGIN_*` variables by `lib/config/demo-server.ts` and passed to the client forms as props. The client mock stores only PBKDF2 verifiers, so no plaintext credential is shipped in `.next/static` or `.next/server`. The final build check greps both directories.
+- No real secrets. No `NEXT_PUBLIC_*` value may ever be treated as private. `.env.example` documents each variable; `.env.local` is gitignored.
+- Registered mock accounts may sign in with a password; the mock DB stores only a salted PBKDF2-SHA-256 hash (plan A6), never plaintext. OTP login also works for existing accounts.
 
 ---
 

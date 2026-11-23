@@ -68,7 +68,9 @@ function LiveRating() {
     if (!skipped) {
       const failure = useBookingStore.getState().lastError;
       setError(failure?.message ?? 'The rating could not be skipped.');
+      return;
     }
+
     router.replace(ROUTES.home);
   };
 
@@ -152,6 +154,11 @@ function HistoricalRating({ rideId }: { rideId: string }) {
       setError(result.error.message);
       return;
     }
+
+    // The same ride may still be the active booking; clearing it keeps the
+    // home banner from asking for a rating that already exists.
+    const booking = useBookingStore.getState();
+    if (booking.activeRide?.id === rideId) booking.resetBooking();
 
     setSubmitted(true);
   };
